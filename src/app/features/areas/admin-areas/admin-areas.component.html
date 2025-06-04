@@ -1,0 +1,105 @@
+<div class="p-6 bg-white rounded-2xl shadow-xl relative">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 4v16m8-8H4" />
+        </svg>
+        Lista de Áreas
+      </div>
+      <button (click)="abrirFormulario()"
+              class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm rounded-md transition duration-200">
+        + Agregar Área
+      </button>
+    </h2>
+  
+    <!-- Estados -->
+    <div *ngIf="cargando" class="flex items-center gap-2 text-green-600 font-medium">
+      <span class="animate-spin h-5 w-5 border-4 border-green-300 border-t-transparent rounded-full"></span>
+      Cargando áreas...
+    </div>
+    <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
+  
+    <!-- Tabla -->
+    <div *ngIf="!cargando && areas.length" class="overflow-x-auto">
+      <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
+        <thead class="bg-green-100 text-green-800 text-sm uppercase tracking-wider">
+          <tr>
+            <th class="px-6 py-3">#</th>
+            <th class="px-6 py-3">Nombre</th>
+            <th class="px-6 py-3">Ubicación</th>
+            <th class="px-6 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let area of areas; let i = index"
+              class="odd:bg-white even:bg-gray-50 hover:bg-green-50 transition-colors duration-200">
+            <td class="px-6 py-3 text-gray-700 font-medium">{{ i + 1 }}</td>
+            <td class="px-6 py-3">{{ area.nombre }}</td>
+            <td class="px-6 py-3">{{ area.ubicacion }}</td>
+            <td class="px-6 py-3">
+              <button (click)="editarArea(area)"
+                      class="text-sm bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg">
+                Editar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div *ngIf="!cargando && areas.length === 0" class="text-gray-600 mt-4 text-center">
+      No hay áreas disponibles.
+    </div>
+  </div>
+  
+
+  <!-- Modal para agregar o editar Área -->
+<div *ngIf="mostrarFormulario" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl relative">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">
+      {{ areaEditando ? 'Editar Área' : 'Registrar Nueva Área' }}
+    </h3>
+
+    <form (ngSubmit)="guardarArea()" #areaForm="ngForm">
+      <!-- Nombre -->
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-1" for="nombre">Nombre del Área</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
+          [(ngModel)]="nuevoArea.nombre"
+          required
+        />
+      </div>
+
+      <!-- Ubicación -->
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-1" for="ubicacion">Ubicación</label>
+        <input
+          type="text"
+          id="ubicacion"
+          name="ubicacion"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
+          [(ngModel)]="nuevoArea.ubicacion"
+          required
+        />
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end gap-2 mt-6">
+        <button type="button" (click)="cerrarFormulario()"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">
+          Cancelar
+        </button>
+        <button type="submit"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+          [disabled]="!areaForm.form.valid">
+          {{ areaEditando ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

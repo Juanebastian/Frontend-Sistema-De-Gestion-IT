@@ -44,8 +44,9 @@
           <td class="px-6 py-3">{{ usuario.nombre }}</td>
           <td class="px-6 py-3">{{ usuario.cedula }}</td>
           <td class="px-6 py-3">{{ usuario.correo }}</td>
-          <td class="px-6 py-3">{{ usuario.rol_id || 'Sin rol' }}</td>
-          <td class="px-6 py-3">{{ usuario.area_id || 'Sin área' }}</td>
+          <td class="px-6 py-3">{{ getNombreRol(usuario.rol_id) }}</td>
+
+          <td class="px-6 py-3">{{ getNombreArea(usuario.area_id) }}</td>
           <td class="px-6 py-3">
             <span [ngClass]="usuario.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
                   class="px-3 py-1 rounded-full text-xs font-semibold">
@@ -99,14 +100,20 @@
 
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700" for="rol_id">Rol</label>
-          <input id="rol_id" [(ngModel)]="nuevoUsuario.rol_id" name="rol_id" type="number"
-                 class="w-full border border-gray-300 rounded px-3 py-2" />
+          <select id="rol_id" [(ngModel)]="nuevoUsuario.rol_id" name="rol_id"
+                  class="w-full border border-gray-300 rounded px-3 py-2">
+            <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
+          </select>
         </div>
+        
 
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700" for="area_id">Área</label>
-          <input id="area_id" [(ngModel)]="nuevoUsuario.area_id" name="area_id" type="number"
-                 class="w-full border border-gray-300 rounded px-3 py-2" />
+          <select id="area_id" [(ngModel)]="nuevoUsuario.area_id" name="area_id"
+                  class="w-full border border-gray-300 rounded px-3 py-2">
+            <option [value]="0">-- Seleccione un área --</option>
+            <option *ngFor="let area of areas" [value]="area.id">{{ area.nombre }}</option>
+          </select>
         </div>
 
         <div class="mb-4">

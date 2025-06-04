@@ -78,7 +78,7 @@ export class AuthService {
 
   getUserInfo(): any {
     if (isPlatformBrowser(this.platformId)) {
-      const user = localStorage.getItem('user');
+      const user = localStorage.getItem('user_info'); // ✅ clave correcta
       return user ? JSON.parse(user) : null;
     }
     return null;

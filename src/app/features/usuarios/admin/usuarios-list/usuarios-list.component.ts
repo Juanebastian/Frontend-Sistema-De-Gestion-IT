@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { UserService } from '../../../../core/services/user.service';
+import { AreaService } from '../../../../core/services/area.service';  // <-- Importa AreaService
 
 @Component({
   selector: 'app-usuarios-list',
@@ -13,6 +14,7 @@ import { UserService } from '../../../../core/services/user.service';
 })
 export class UsuariosListComponent implements OnInit {
   usuarios: any[] = [];
+  areas: any[] = [];   // <-- agrega array para áreas
   cargando = false;
   error: string | null = null;
 
@@ -21,10 +23,14 @@ export class UsuariosListComponent implements OnInit {
 
   nuevoUsuario: any = this.usuarioVacio();
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private areaService: AreaService     // <-- Inyecta AreaService
+  ) {}
 
   ngOnInit(): void {
     this.cargarUsuarios();
+    this.cargarAreas();                  // <-- carga las áreas al iniciar
   }
 
   usuarioVacio(): any {
@@ -51,6 +57,17 @@ export class UsuariosListComponent implements OnInit {
         console.error('Error al cargar usuarios:', err);
         this.error = 'Error al cargar usuarios';
         this.cargando = false;
+      }
+    });
+  }
+
+  cargarAreas(): void {
+    this.areaService.getAllAreas().subscribe({
+      next: (data) => {
+        this.areas = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar áreas:', err);
       }
     });
   }
@@ -114,5 +131,27 @@ export class UsuariosListComponent implements OnInit {
       activo: usuario.activo ?? true
     };
     this.mostrarFormulario = true;
+  }
+
+  getNombreRol(rolId: number): string {
+    switch (rolId) {
+      case 1:
+        return 'Administrador';
+      case 2:
+        return 'Técnico';
+      default:
+        return 'Sin rol';
+    }
+  }
+
+  roles = [
+    { id: 1, nombre: 'Administrador' },
+    { id: 2, nombre: 'Técnico' }
+  ];
+
+
+  getNombreArea(areaId: number): string {
+    const area = this.areas.find(a => a.id === areaId);
+    return area ? area.nombre : 'Sin área';
   }
 }

@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment.component';
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {
+export class ComputerService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private apiUrl = environment.apiUrl;
@@ -21,33 +21,33 @@ export class UserService {
   }
 
   /** Registra un nuevo usuario */
-  registerUser(data: any): Observable<any> {
+  registerComputer(data: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.apiUrl}/auth/register`, data, { headers }).pipe(
+    return this.http.post(`${this.apiUrl}/computadores`, data, { headers }).pipe(
       catchError((err) => {
-        console.error('❌ Error al registrar usuario:', err);
+        console.error('❌ Error al registrar computadores:', err);
         return throwError(() => err);
       })
     );
   }
 
   /** Obtiene todos los usuarios */
-  getAllUsers(): Observable<any> {
+  getAllComputers(): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get(`${this.apiUrl}/usuarios/`, { headers }).pipe(
+    return this.http.get(`${this.apiUrl}/computadores/`, { headers }).pipe(
       catchError((err) => {
-        console.error('❌ Error al obtener usuarios:', err);
+        console.error('❌ Error al obtener computadores:', err);
         return throwError(() => err);
       })
     );
   }
 
   /** Actualiza un usuario por ID */
-  updateUser(userId: number, data: any): Observable<any> {
+  updateComputer(userId: number, data: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.put(`${this.apiUrl}/usuarios/${userId}`, data, { headers }).pipe(
+    return this.http.put(`${this.apiUrl}/computadores/${userId}`, data, { headers }).pipe(
       catchError((err) => {
-        console.error('❌ Error al actualizar usuario:', err);
+        console.error('❌ Error al actualizar computadores:', err);
         return throwError(() => err);
       })
     );
