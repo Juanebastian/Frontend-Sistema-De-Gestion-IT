@@ -47,9 +47,9 @@
           <td class="px-6 py-3">{{ getNombreMarca(pc.marca_id) }}</td>
           <td class="px-6 py-3">{{ getNombreModelo(pc.modelo_id) }}</td>
           <td class="px-6 py-3">{{ getNombreSO(pc.sistema_operativo_id) }}</td>
-          <td class="px-6 py-3">{{ pc.tipo_id }}</td>
+          <td class="px-6 py-3">{{ getNombreTipoPC(pc.tipo_id) }}</td>
           <td class="px-6 py-3">{{ getNombreArea(pc.area_id) }}</td>
-          <td class="px-6 py-3">{{ pc.id_registrado_por }}</td>
+          <td class="px-6 py-3">{{ getNombreUsuario(pc.id_registrado_por) }}</td>
           <td class="px-6 py-3">{{ pc.ram }}</td>
           <td class="px-6 py-3">{{ pc.disco_duro }}</td>
           <td class="px-6 py-3">{{ pc.serie }}</td>
@@ -182,16 +182,20 @@
         </div>
 
         <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-700" for="tipo_id">Tipo ID</label>
-          <input
+          <label class="block text-sm font-medium text-gray-700" for="tipo_id">Tipo de PC</label>
+          <select
             id="tipo_id"
-            type="number"
             [(ngModel)]="nuevoComputador.tipo_id"
             name="tipo_id"
             required
             class="w-full border border-gray-300 rounded px-3 py-2"
-            min="1"
-          />
+          >
+            <option [value]="0" disabled>Seleccione el tipo de PC</option>
+            <option [value]="1">Portátil</option>
+            <option [value]="2">PC de escritorio</option>
+            <option [value]="3">All-in-One</option>
+            <option [value]="4">Tableta</option>
+          </select>
         </div>
 
         <div class="mb-3">

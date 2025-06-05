@@ -52,4 +52,14 @@ export class UserService {
       })
     );
   }
+
+  getUserById(userId: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/usuarios/${userId}`, { headers }).pipe(
+      catchError((err) => {
+        console.error('❌ Error al obtener usuario por ID:', err);
+        return throwError(() => err);
+      })
+    );
+  }
 }

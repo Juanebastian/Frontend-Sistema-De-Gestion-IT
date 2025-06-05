@@ -8,6 +8,7 @@ import { AreaService } from '../../../../core/services/area.service';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { ModelService } from '../../../../core/services/models.service';
 import { OsService } from '../../../../core/services/os.service';
+import { UserService } from '../../../../core/services/user.service';
 
 interface Computador {
   id?: number;
@@ -40,6 +41,7 @@ export class EquiposListComponent implements OnInit {
   marcas: any[] = [];
   modelos: any[] = [];
   sistemasOperativos: any[] = [];
+  usuarios: any[] = [];
   cargando = false;
   error = '';
   mostrarFormulario = false;
@@ -52,6 +54,7 @@ export class EquiposListComponent implements OnInit {
     private marcaService: MarcaService,
     private modeloService: ModelService,
     private soService: OsService,
+    private userService: UserService,
     private authService: AuthService) {}
     
 
@@ -60,6 +63,7 @@ export class EquiposListComponent implements OnInit {
     this.cargarAreas(); 
     this.cargarMarcas(); // Nueva línea
     this.cargarModelos();
+    this.cargarUsuarios();
     this.cargarSistemasOperativos();
   }
 
@@ -120,6 +124,17 @@ export class EquiposListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar sistemas operativos:', err);
+      }
+    });
+  }
+
+  cargarUsuarios(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (data) => {
+        this.usuarios = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios:', err);
       }
     });
   }
@@ -218,6 +233,20 @@ export class EquiposListComponent implements OnInit {
     return so ? so.nombre : 'Sin SO';
   }
 
- 
+  getNombreTipoPC(tipo_id: number): string {
+    const tipos: { [key: number]: string } = {
+      1: 'Portátil',
+      2: 'PC de escritorio',
+      3: 'All-in-One',
+      4: 'Tableta'
+    };
+    return tipos[tipo_id] || 'Desconocido';
+  }
+
+  getNombreUsuario(id: number): string {
+    const usuario = this.usuarios.find(u => u.id === id);
+    return usuario ? usuario.nombre : 'Desconocido';
+  }
+
   
 }

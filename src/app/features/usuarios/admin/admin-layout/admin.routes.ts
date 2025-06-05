@@ -7,6 +7,7 @@ import { EquiposListComponent } from '../../../equipos/admin/equipos-list/equipo
 import { MarcasListComponent } from '../../../equipos/admin/marcas-list/marcas-list.component';
 import { ModelosListComponent } from '../../../equipos/admin/modelos-list/modelos-list.component';
 import { SistemasOperativosListComponent } from '../../../equipos/admin/sistemas-operativos-list/sistemas-operativos-list.component';
+import { AdminTicketsComponent } from '../../../mesa-ayuda/admin/admin-tickets/admin-tickets.component';
 
 
 export default [
@@ -21,6 +22,7 @@ export default [
       { path: 'marcas', component: MarcasListComponent },
       { path: 'modelos', component: ModelosListComponent },
       { path: 'sistemas-operativos', component: SistemasOperativosListComponent },
+      { path: 'tickets', component: AdminTicketsComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ]
   }
