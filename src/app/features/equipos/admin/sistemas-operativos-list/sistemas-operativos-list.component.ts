@@ -3,11 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { OsService } from '../../../../core/services/os.service';
+import { SistemaOperativo } from '../../../../core/models/computer.model';
 
-interface SistemaOperativo {
-  id?: number;
-  nombre: string;
-}
+
 
 @Component({
   selector: 'app-sistemas-operativos-list',

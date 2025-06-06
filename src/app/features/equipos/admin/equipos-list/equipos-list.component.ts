@@ -9,24 +9,9 @@ import { MarcaService } from '../../../../core/services/marca.service';
 import { ModelService } from '../../../../core/services/models.service';
 import { OsService } from '../../../../core/services/os.service';
 import { UserService } from '../../../../core/services/user.service';
+import { Computador } from '../../../../core/models/computer.model';
 
-interface Computador {
-  id?: number;
-  marca_id: number;
-  modelo_id: number;
-  sistema_operativo_id: number;
-  tipo_id: number;
-  area_id: number;
-  id_registrado_por: number;
-  ram: string;
-  disco_duro: string;
-  serie: string;
-  codigo_inventario: string;
-  fecha_adquisicion: string;
-  activo: boolean;
-  fecha_creacion?: string;
-  fecha_actualizacion?: string;
-}
+
 
 @Component({
   selector: 'app-equipos-list',

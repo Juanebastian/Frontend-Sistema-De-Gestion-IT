@@ -3,12 +3,9 @@ import { AreaService } from '../../../core/services/area.service';
 import { CommonModule } from '@angular/common'; // Importa CommonModule para usar ngIf, ngFor, etc.
 import { FormsModule } from '@angular/forms'; // Importa FormsModule para usar ngModel
 import { HttpClientModule } from '@angular/common/http'; // Importa HttpClientModule para las peticiones HTTP   
+import { Area } from '../../../core/models/area.model';
 
-interface Area {
-  id?: number;
-  nombre: string;
-  ubicacion: string;
-}
+
 
 @Component({
   selector: 'app-admin-areas',

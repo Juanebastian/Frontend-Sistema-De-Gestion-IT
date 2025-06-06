@@ -3,13 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ModelService } from '../../../../core/services/models.service';
+import { Modelo } from '../../../../core/models/computer.model';
 
 
-
-interface Modelo {
-  id?: number;
-  nombre: string;
-}
 
 @Component({
   selector: 'app-modelos-list',

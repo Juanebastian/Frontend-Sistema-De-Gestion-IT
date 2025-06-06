@@ -4,11 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { MarcaService } from '../../../../core/services/marca.service';
+import { Marca } from '../../../../core/models/computer.model';
 
-interface Marca {
-  id?: number;
-  nombre: string;
-}
+
 @Component({
   selector: 'app-marcas-list',
   imports: [CommonModule, FormsModule, HttpClientModule],

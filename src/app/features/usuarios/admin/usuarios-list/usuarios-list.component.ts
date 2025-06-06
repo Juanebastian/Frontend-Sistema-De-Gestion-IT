@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { UserService } from '../../../../core/services/user.service';
 import { AreaService } from '../../../../core/services/area.service';  // <-- Importa AreaService
+import { Usuario } from '../../../../core/models/user.model';
+import { Area } from '../../../../core/models/area.model';
 
 @Component({
   selector: 'app-usuarios-list',
@@ -13,8 +15,8 @@ import { AreaService } from '../../../../core/services/area.service';  // <-- Im
   styleUrls: ['./usuarios-list.component.css']
 })
 export class UsuariosListComponent implements OnInit {
-  usuarios: any[] = [];
-  areas: any[] = [];   // <-- agrega array para áreas
+  usuarios: Usuario[] = [];  // Ahora tipado
+  areas: Area[] = [];  
   cargando = false;
   error: string | null = null;
 

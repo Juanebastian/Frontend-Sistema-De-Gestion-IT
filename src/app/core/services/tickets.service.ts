@@ -68,4 +68,21 @@ export class TicketService {
       })
     );
   }
+
+
+    /** Cierra un ticket usando PUT /tickets/{id}/cerrar */
+    cerrarTicket(ticketId: number): Observable<any> {
+      return this.http
+        .put(
+          `${this.apiUrl}/${ticketId}/cerrar`,
+          {}, // no enviamos body
+          { headers: this.getAuthHeaders() }
+        )
+        .pipe(
+          catchError((err) => {
+            console.error(`❌ Error al cerrar ticket ${ticketId}:`, err);
+            return throwError(() => err);
+          })
+        );
+    }
 }

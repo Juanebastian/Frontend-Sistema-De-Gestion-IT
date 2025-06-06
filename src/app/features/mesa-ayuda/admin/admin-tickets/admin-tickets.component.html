@@ -1,79 +1,192 @@
 <div class="p-6 bg-white rounded-2xl shadow-xl relative">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L15 12.75 9.75 8.5" />
-        </svg>
-        Lista de Tickets
-      </div>
-      <button (click)="abrirFormulario()"
-        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm rounded-md transition duration-200">
-        + Nuevo Ticket
-      </button>
-    </h2>
-  
-    <div *ngIf="cargando" class="flex items-center gap-2 text-green-600 font-medium">
-      <span class="animate-spin h-5 w-5 border-4 border-green-300 border-t-transparent rounded-full"></span>
-      Cargando tickets...
+  <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L15 12.75 9.75 8.5" />
+      </svg>
+      Lista de Tickets
     </div>
-    <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
-  
-    <div *ngIf="!cargando && tickets.length" class="overflow-x-auto">
-      <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
-        <thead class="bg-green-100 text-green-800 text-sm uppercase tracking-wider">
-          <tr>
-            <th class="px-6 py-3">ID</th>
-            <th class="px-6 py-3">Asunto</th>
-            <th class="px-6 py-3">Descripción</th>
-            <th class="px-6 py-3">Estado</th>
-            <th class="px-6 py-3">Prioridad</th>
-            <th class="px-6 py-3">Creador</th>
-            <th class="px-6 py-3">Técnico</th>
-            <th class="px-6 py-3">Área</th>
-            <th class="px-6 py-3">Fecha Creación</th>
-            <th class="px-6 py-3">Fecha Cierre</th>
-            <th class="px-6 py-3">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ticket of tickets"
-              class="odd:bg-white even:bg-gray-50 hover:bg-green-50 transition-colors duration-200">
-            <td class="px-6 py-3">{{ ticket.id }}</td>
-            <td class="px-6 py-3">{{ ticket.asunto }}</td>
-            <td class="px-6 py-3 truncate max-w-xs">{{ ticket.descripcion }}</td>
-            <td class="px-6 py-3">{{ getNombreEstado(ticket.estado_id) }}</td>
-            <td class="px-6 py-3">{{ getNombrePrioridad(ticket.prioridad_id) }}</td>
-            <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_creador) }}</td>
-            <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
-            <td class="px-6 py-3">{{ getNombreArea(ticket.area_id) }}</td>
-            <td class="px-6 py-3">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
-            <td class="px-6 py-3">{{ ticket.fecha_cierre ? (ticket.fecha_cierre | date:'yyyy-MM-dd HH:mm') : '-' }}</td>
-            <td class="px-6 py-3">
-              <button (click)="editarTicket(ticket)"
-                      class="text-sm bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg">
-                Editar
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  
-    <div *ngIf="!cargando && tickets.length === 0" class="text-gray-600 mt-4 text-center">
-      No hay tickets disponibles.
-    </div>
-  </div>
-  
-  <!-- Modal de Formulario -->
-  <div *ngIf="mostrarFormulario" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
-    <div
-      class="bg-white w-full max-w-md max-h-[90vh] p-6 rounded-lg shadow-lg overflow-y-auto relative"
-      style="min-width: 320px;"
-    >
-    <h3 class="text-xl font-bold mb-4">{{ esEdicion ? 'Editar Ticket' : 'Nuevo Ticket' }}</h3>
+    <button (click)="abrirFormulario()"
+      class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm rounded-md transition duration-200">
+      + Nuevo Ticket
+    </button>
+  </h2>
 
-  
-      <form (ngSubmit)="guardarTicket()" #form="ngForm" novalidate>
+  <div *ngIf="cargando" class="flex items-center gap-2 text-green-600 font-medium">
+    <span class="animate-spin h-5 w-5 border-4 border-green-300 border-t-transparent rounded-full"></span>
+    Cargando tickets...
+  </div>
+  <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
+
+  <div *ngIf="!cargando && tickets.length" class="overflow-x-auto">
+    <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
+      <thead class="bg-green-100 text-green-800 text-sm uppercase tracking-wider">
+        <tr>
+          <th class="px-6 py-3">ID</th>
+          <th class="px-6 py-3">Asunto</th>
+          <th class="px-6 py-3">Descripción</th>
+          <th class="px-6 py-3">Estado</th>
+          <th class="px-6 py-3">Prioridad</th>
+          <th class="px-6 py-3">Creador</th>
+          <th class="px-6 py-3">Técnico</th>
+          <th class="px-6 py-3">Área</th>
+          <th class="px-6 py-3">Fecha Creación</th>
+          <th class="px-6 py-3">Fecha Cierre</th>
+          <th class="px-6 py-3">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ticket of tickets"
+          class="odd:bg-white even:bg-gray-50 hover:bg-green-50 transition-colors duration-200">
+          <td class="px-6 py-3">{{ ticket.id }}</td>
+          <td class="px-6 py-3">{{ ticket.asunto }}</td>
+          <td class="px-6 py-3 truncate max-w-xs">{{ ticket.descripcion }}</td>
+          <td class="px-6 py-3">{{ getNombreEstado(ticket.estado_id) }}</td>
+          <td class="px-6 py-3">{{ getNombrePrioridad(ticket.prioridad_id) }}</td>
+          <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_creador) }}</td>
+          <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
+          <td class="px-6 py-3">{{ getNombreArea(ticket.area_id) }}</td>
+          <td class="px-6 py-3">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
+          <td class="px-6 py-3">{{ ticket.fecha_cierre ? (ticket.fecha_cierre | date:'yyyy-MM-dd HH:mm') : '-' }}</td>
+          <td class="px-6 py-3">
+            <!-- Solo el botón “Ver” que abre el modal -->
+            <button (click)="verTicket(ticket)"
+              class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition"
+              title="Ver detalles">
+              Ver
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!cargando && tickets.length === 0" class="text-gray-600 mt-4 text-center">
+    No hay tickets disponibles.
+  </div>
+</div>
+
+<!-- Modal de Formulario -->
+<div *ngIf="mostrarFormulario" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+  <div
+    class="bg-white w-full max-w-md max-h-[90vh] p-6 rounded-lg shadow-lg overflow-y-auto relative"
+    style="min-width: 320px;"
+  >
+    <!-- Título dinámico -->
+    <h3 class="text-xl font-bold mb-4">
+      {{ modoVer ? 'Ver Ticket' : (modoAsignar ? 'Asignar Ticket' : 'Nuevo Ticket') }}
+    </h3>
+
+    <form (ngSubmit)="guardarTicket()" #form="ngForm" novalidate>
+      <!-- MODO “VER”: todos los campos en solo lectura -->
+      <ng-container *ngIf="modoVer">
+        <!-- ASUNTO -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Asunto</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+            {{ ticketForm.asunto }}
+          </p>
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Descripción</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100 whitespace-pre-wrap">
+            {{ ticketForm.descripcion }}
+          </p>
+        </div>
+
+        <!-- ÁREA -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Área</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+            {{ getNombreArea(ticketForm.area_id) }}
+          </p>
+        </div>
+
+        <!-- ESTADO -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Estado</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+            {{ getNombreEstado(ticketForm.estado_id) }}
+          </p>
+        </div>
+
+        <!-- PRIORIDAD -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Prioridad</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+            {{ getNombrePrioridad(ticketForm.prioridad_id) }}
+          </p>
+        </div>
+
+        <!-- TÉCNICO ASIGNADO -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Técnico Asignado</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+            {{ getNombreUsuario(ticketForm.id_tecnico) }}
+          </p>
+        </div>
+
+        <!-- FECHA CREACIÓN -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Fecha Creación</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+            {{ ticketForm.fecha_creacion | date: 'yyyy-MM-dd HH:mm' }}
+          </p>
+        </div>
+
+        <!-- FECHA CIERRE -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700">Fecha Cierre</label>
+          <p class="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+            {{ ticketForm.fecha_cierre ? (ticketForm.fecha_cierre | date: 'yyyy-MM-dd HH:mm') : '-' }}
+          </p>
+        </div>
+      </ng-container>
+
+      <!-- MODO “ASIGNAR”: solo Prioridad y Técnico -->
+      <ng-container *ngIf="modoAsignar && !modoVer">
+        <!-- PRIORIDAD -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700" for="prioridad_id">Prioridad</label>
+          <select
+            id="prioridad_id"
+            [(ngModel)]="ticketForm.prioridad_id"
+            name="prioridad_id"
+            required
+            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option [value]="0" disabled>Seleccione una prioridad</option>
+            <option *ngFor="let prioridad of prioridades" [value]="prioridad.id">
+              {{ prioridad.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <!-- TÉCNICO -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="id_tecnico">
+            Técnico Asignado
+          </label>
+          <select
+            id="id_tecnico"
+            [(ngModel)]="ticketForm.id_tecnico"
+            name="id_tecnico"
+            required
+            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option [value]="0" disabled>Seleccione un Técnico</option>
+            <option *ngFor="let usuario of usuarios" [value]="usuario.id">
+              {{ usuario.nombre }}
+            </option>
+          </select>
+        </div>
+      </ng-container>
+
+      <!-- MODO “NUEVO”: mostrar Asunto, Descripción y Área -->
+      <ng-container *ngIf="!modoAsignar && !modoVer">
+        <!-- ASUNTO -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700" for="asunto">Asunto</label>
           <input
@@ -84,7 +197,8 @@
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
-  
+
+        <!-- DESCRIPCIÓN -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700" for="descripcion">Descripción</label>
           <textarea
@@ -96,37 +210,8 @@
             class="w-full border border-gray-300 rounded px-3 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-green-500"
           ></textarea>
         </div>
-  
-        <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-700" for="estado_id">Estado</label>
-          <select
-            id="estado_id"
-            [(ngModel)]="ticketForm.estado_id"
-            name="estado_id"
-            required
-            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option [value]="0" disabled>Seleccione un estado</option>
-            <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
-          </select>
-        </div>
-  
-        <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-700" for="prioridad_id">Prioridad</label>
-          <select
-            id="prioridad_id"
-            [(ngModel)]="ticketForm.prioridad_id"
-            name="prioridad_id"
-            required
-            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option [value]="0" disabled>Seleccione una prioridad</option>
-            <option *ngFor="let prioridad of prioridades" [value]="prioridad.id">{{ prioridad.nombre }}</option>
-          </select>
-        </div>
-  
-        
-  
+
+        <!-- ÁREA -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700" for="area_id">Área</label>
           <select
@@ -137,25 +222,47 @@
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option [value]="0" disabled>Seleccione un área</option>
-            <option *ngFor="let area of areas" [value]="area.id">{{ area.nombre }}</option>
+            <option *ngFor="let area of areas" [value]="area.id">
+              {{ area.nombre }}
+            </option>
           </select>
         </div>
-  
-        <div class="flex justify-end gap-3 mt-6">
-          <button type="button"
-            (click)="cerrarFormulario()"
-            class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-md text-gray-700 font-semibold transition">
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            [disabled]="form.invalid"
-            class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md font-semibold disabled:opacity-50 transition"
-          >
-            Guardar
-          </button>
-        </div>
-      </form>
+      </ng-container>
+
+      <!-- BOTONES DE GUARDAR / CANCELAR -->
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button"
+                (click)="cerrarFormulario()"
+                class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-md text-gray-700 font-semibold transition">
+          Cancelar
+        </button>
+        <!-- Solo mostrar “Guardar” si NO es solo lectura -->
+        <button *ngIf="!modoVer"
+                type="submit"
+                [disabled]="form.invalid"
+                class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md font-semibold disabled:opacity-50 transition">
+          Guardar
+        </button>
+      </div>
+    </form>
+
+    <!-- ================= ACCIONES ADICIONALES DENTRO DEL MODAL ================ -->
+    <div class="mt-4 space-y-2" *ngIf="modoVer || modoAsignar">
+      <!-- Botón “Iniciar Asignación” (solo en modoVer si no está en Proceso/Cerrado) -->
+      <button *ngIf="modoVer && ticketForm.estado_id !== 2 && ticketForm.estado_id !== 3"
+              (click)="activarAsignarDesdeVer()"
+              class="w-full text-center bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg transition">
+        Iniciar Asignación
+      </button>
+
+      <!-- Botón “Cerrar Ticket” (solo en modoVer si no está cerrado) -->
+      <button *ngIf="modoVer && ticketForm.estado_id !== 3"
+              (click)="confirmarCerrarDesdeVer()"
+              class="w-full text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+        Cerrar Ticket
+      </button>
     </div>
+    <!-- ====================================================================== -->
+
   </div>
-  
+</div>
