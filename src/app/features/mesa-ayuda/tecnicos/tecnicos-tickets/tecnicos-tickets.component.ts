@@ -1,26 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../../../core/services/auth.service';
-import { AreaService } from '../../../../core/services/area.service';
+import { Component } from '@angular/core';
 import { TicketService } from '../../../../core/services/tickets.service';
+import { AreaService } from '../../../../core/services/area.service';
 import { UserService } from '../../../../core/services/user.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { Ticket , Estado , Prioridad} from '../../../../core/models/ticket.model';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Estado, Prioridad, Ticket } from '../../../../core/models/ticket.model';
 import { Area } from '../../../../core/models/area.model';
 import { Usuario } from '../../../../core/models/user.model';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+
+
 
 @Component({
-  selector: 'app-admin-tickets',
+  selector: 'app-tecnicos-tickets',
   imports: [CommonModule, FormsModule, HttpClientModule],
-  templateUrl: './admin-tickets.component.html',
-  styleUrls: ['./admin-tickets.component.css']
+  templateUrl: './tecnicos-tickets.component.html',
+  styleUrls: ['./tecnicos-tickets.component.css']
 })
-export class AdminTicketsComponent implements OnInit {
+export class TecnicosTicketsComponent {
   tickets: Ticket[] = [];
   areas: Area[] = [];
-   usuarios: Usuario[] = [];
-   ticketsAbiertosCount: number = 0;
+  usuarios: Usuario[] = [];
+  ticketsAbiertosCount: number = 0;
 
   estados: Estado[] = [
     { id: 1, nombre: 'Abierto' },
@@ -37,7 +40,8 @@ export class AdminTicketsComponent implements OnInit {
 
   mostrarFormulario: boolean = false;
   modoAsignar: boolean = false;
-  modoVer: boolean = false;               // Bandera para controlar “Ver”
+  modoVer: boolean = false;
+
   ticketForm: Ticket = this.getTicketVacio();
 
   cargando: boolean = false;
@@ -64,7 +68,6 @@ export class AdminTicketsComponent implements OnInit {
       prioridad_id: 4,
       area_id: 0,
       observaciones: '',
-
       id_creador: 1,
       id_tecnico: 1,
     };
@@ -73,20 +76,30 @@ export class AdminTicketsComponent implements OnInit {
   cargarTickets(): void {
     this.cargando = true;
     this.error = '';
-    this.ticketService.getAllTickets().subscribe({
+  
+    const idTecnico = this.authService.getUserId();
+  
+    if (!idTecnico) {
+      this.error = 'No se pudo obtener el ID del técnico.';
+      this.cargando = false;
+      return;
+    }
+  
+    this.ticketService.getTicketsByTecnicoId(Number(idTecnico)).subscribe({
       next: (data) => {
         this.tickets = data;
-        // Filtrar los tickets con estado_id = 1 (Abierto)
-        this.ticketsAbiertosCount = this.tickets.filter(t => t.estado_id === 1).length;
+        this.ticketsAbiertosCount = this.tickets.filter(t => t.estado_id === 2).length;
         this.cargando = false;
       },
       error: (err) => {
         console.error('Error al cargar tickets:', err);
-        this.error = ' Error cargando tickets';
+        this.error = 'Error cargando tickets';
         this.cargando = false;
       }
     });
   }
+  
+  
 
   cargarAreas(): void {
     this.areaService.getAllAreas().subscribe({
@@ -95,7 +108,7 @@ export class AdminTicketsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar áreas:', err);
-        alert(' Error cargando áreas');
+        alert('Error cargando áreas');
       }
     });
   }
@@ -112,7 +125,6 @@ export class AdminTicketsComponent implements OnInit {
   }
 
   abrirFormulario(): void {
-    // Modo “Nuevo Ticket”
     this.ticketForm = this.getTicketVacio();
     this.ticketForm.id_creador = Number(this.authService.getUserId() || 0);
     this.modoAsignar = false;
@@ -121,7 +133,6 @@ export class AdminTicketsComponent implements OnInit {
   }
 
   verTicket(ticket: Ticket): void {
-    // Modo “Ver Ticket” (solo lectura)
     this.ticketForm = { ...ticket };
     this.modoVer = true;
     this.modoAsignar = false;
@@ -129,16 +140,14 @@ export class AdminTicketsComponent implements OnInit {
   }
 
   activarAsignarDesdeVer(): void {
-    // Cambia de lectura a asignación dentro del mismo modal
-    this.ticketForm.estado_id = 2; // “En Proceso”
+    this.ticketForm.estado_id = 2;
     this.modoVer = false;
     this.modoAsignar = true;
   }
 
   asignarTicket(ticket: Ticket): void {
-    // Modo “Asignar Ticket” directo (sin pasar por Ver)
     this.ticketForm = { ...ticket };
-    this.ticketForm.estado_id = 2; // “En Proceso”
+    this.ticketForm.estado_id = 2;
     this.modoAsignar = true;
     this.modoVer = false;
     this.mostrarFormulario = true;
@@ -152,55 +161,54 @@ export class AdminTicketsComponent implements OnInit {
 
   guardarTicket(): void {
     if (this.modoVer) {
-      // En modoVer no guardamos nada: simplemente cerramos el modal
       this.cerrarFormulario();
       return;
     }
 
     const userId = this.authService.getUserId();
     if (!userId) {
-      alert(' No se pudo obtener el usuario autenticado.');
+      alert('No se pudo obtener el usuario autenticado.');
       return;
     }
 
     this.ticketForm.id_creador = Number(userId);
 
     if (this.modoAsignar) {
-      // Guardar asignación (prioridad + técnico, estado ya en 2)
       if (!this.ticketForm.id) {
-        alert(' El ticket no tiene ID para asignar.');
+        alert('El ticket no tiene ID para asignar.');
         return;
       }
+
       this.ticketService.updateTicket(this.ticketForm.id, this.ticketForm).subscribe({
         next: () => {
-          alert(' Ticket asignado con éxito');
+          alert('Ticket asignado con éxito');
           this.cargarTickets();
           this.cerrarFormulario();
         },
         error: (err) => {
           console.error('Error asignar ticket:', err);
-          alert(' Error al asignar ticket');
+          alert('Error al asignar ticket');
         }
       });
     } else {
-      // Guardar nuevo ticket
       if (
         !this.ticketForm.asunto.trim() ||
         !this.ticketForm.descripcion.trim() ||
         this.ticketForm.area_id === 0
       ) {
-        alert(' Completa asunto, descripción y área.');
+        alert('Completa asunto, descripción y área.');
         return;
       }
+
       this.ticketService.createTicket(this.ticketForm).subscribe({
         next: () => {
-          alert(' Ticket registrado con éxito');
+          alert('Ticket registrado con éxito');
           this.cargarTickets();
           this.cerrarFormulario();
         },
         error: (err) => {
           console.error('Error registrando ticket:', err);
-          alert(' Error al registrar ticket');
+          alert('Error al registrar ticket');
         }
       });
     }
@@ -212,8 +220,7 @@ export class AdminTicketsComponent implements OnInit {
     }
   }
 
-
- cerrarTicket(ticket: Ticket): void {
+  cerrarTicket(ticket: Ticket): void {
     // Actualizo los campos localmente para reflejar cierre
     ticket.estado_id = 3; // “Cerrado”
    
@@ -237,7 +244,6 @@ export class AdminTicketsComponent implements OnInit {
   }
 
 
-
   getNombreUsuario(id: number): string {
     const usuario = this.usuarios.find(u => u.id === id);
     return usuario ? usuario.nombre : 'Desconocido';
@@ -256,5 +262,17 @@ export class AdminTicketsComponent implements OnInit {
   getNombreArea(id: number): string {
     const area = this.areas.find(a => a.id === id);
     return area ? area.nombre : 'Sin área';
+  }
+  get camposVer() {
+    return [
+      { label: 'Asunto', valor: this.ticketForm.asunto },
+      { label: 'Descripción', valor: this.ticketForm.descripcion },
+      { label: 'Área', valor: this.getNombreArea(this.ticketForm.area_id) },
+      { label: 'Estado', valor: this.getNombreEstado(this.ticketForm.estado_id) },
+      { label: 'Prioridad', valor: this.getNombrePrioridad(this.ticketForm.prioridad_id) },
+      { label: 'Técnico Asignado', valor: this.getNombreUsuario(this.ticketForm.id_tecnico) },
+      { label: 'Fecha Creación', valor: this.ticketForm.fecha_creacion },
+      { label: 'Fecha Cierre', valor: this.ticketForm.fecha_cierre || '-' }
+    ];
   }
 }

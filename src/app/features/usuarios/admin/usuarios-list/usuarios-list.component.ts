@@ -15,7 +15,7 @@ import { Area } from '../../../../core/models/area.model';
   styleUrls: ['./usuarios-list.component.css']
 })
 export class UsuariosListComponent implements OnInit {
-  usuarios: Usuario[] = [];  // Ahora tipado
+  usuarios: Usuario[] = [];  
   areas: Area[] = [];  
   cargando = false;
   error: string | null = null;
@@ -27,12 +27,12 @@ export class UsuariosListComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private areaService: AreaService     // <-- Inyecta AreaService
+    private areaService: AreaService     
   ) {}
 
   ngOnInit(): void {
     this.cargarUsuarios();
-    this.cargarAreas();                  // <-- carga las áreas al iniciar
+    this.cargarAreas();                 
   }
 
   usuarioVacio(): any {
@@ -96,26 +96,26 @@ export class UsuariosListComponent implements OnInit {
 
       this.userService.updateUser(usuarioActualizado.id, usuarioActualizado).subscribe({
         next: () => {
-          alert('✅ Usuario actualizado correctamente');
+          alert(' Usuario actualizado correctamente');
           this.cargarUsuarios();
           this.cerrarFormulario();
         },
         error: (err) => {
-          console.error('❌ Error al actualizar usuario:', err);
-          alert('❌ Error al actualizar usuario');
+          console.error(' Error al actualizar usuario:', err);
+          alert(' Error al actualizar usuario');
         }
       });
     } else {
       // Registro
       this.userService.registerUser(this.nuevoUsuario).subscribe({
         next: () => {
-          alert('✅ Usuario registrado con éxito');
+          alert(' Usuario registrado con éxito');
           this.cargarUsuarios();
           this.cerrarFormulario();
         },
         error: (err) => {
-          console.error('❌ Error al registrar usuario:', err);
-          alert('❌ Error al registrar usuario');
+          console.error(' Error al registrar usuario:', err);
+          alert(' Error al registrar usuario');
         }
       });
     }
@@ -141,6 +141,8 @@ export class UsuariosListComponent implements OnInit {
         return 'Administrador';
       case 2:
         return 'Técnico';
+      case 3:
+        return 'Colaborador';
       default:
         return 'Sin rol';
     }
@@ -148,7 +150,8 @@ export class UsuariosListComponent implements OnInit {
 
   roles = [
     { id: 1, nombre: 'Administrador' },
-    { id: 2, nombre: 'Técnico' }
+    { id: 2, nombre: 'Técnico' },
+    { id: 3, nombre: 'Colaborador' }
   ];
 
 

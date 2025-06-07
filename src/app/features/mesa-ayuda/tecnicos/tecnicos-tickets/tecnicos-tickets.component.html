@@ -1,82 +1,76 @@
-<!-- admin-tickets.component.html -->
 <div class="p-6 bg-white rounded-2xl shadow-xl relative">
-  <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L15 12.75 9.75 8.5" />
-      </svg>
-      Lista de Tickets
+    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L15 12.75 9.75 8.5" />
+        </svg>
+        Lista de Tickets
+      </div>
+      <div class="flex items-center gap-4">
+        <p class="text-sm text-gray-600">En Proceso: <span class="font-semibold">{{ ticketsAbiertosCount }}</span></p>
+        <button (click)="abrirFormulario()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm rounded-md transition duration-200">
+          + Nuevo Ticket
+        </button>
+      </div>
+    </h2>
+  
+    <div *ngIf="cargando" class="flex items-center gap-2 text-green-600 font-medium">
+      <span class="animate-spin h-5 w-5 border-4 border-green-300 border-t-transparent rounded-full"></span>
+      Cargando tickets...
     </div>
-    <div class="flex items-center gap-4">
-      <p class="text-sm text-gray-600">
-        Abiertos: <span class="font-semibold">{{ ticketsAbiertosCount }}</span>
-      </p>
-      <button (click)="abrirFormulario()"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm rounded-md transition duration-200">
-        + Nuevo Ticket
-      </button>
-    </div>
-  </h2>
-
-  <div *ngIf="cargando" class="flex items-center gap-2 text-green-600 font-medium">
-    <span class="animate-spin h-5 w-5 border-4 border-green-300 border-t-transparent rounded-full"></span>
-    Cargando tickets...
-  </div>
-  <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
-
-  <div *ngIf="!cargando && tickets.length" class="overflow-x-auto">
-    <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
-      <thead class="bg-blue-100 text-blue-800 text-sm uppercase tracking-wider">
-        <tr>
-          <th class="px-6 py-3">ID</th>
-          <th class="px-6 py-3">Asunto</th>
-          <th class="px-6 py-3">Descripción</th>
-          <th class="px-6 py-3">Estado</th>
-          <th class="px-6 py-3">Prioridad</th>
-          <th class="px-6 py-3">Creador</th>
-          <th class="px-6 py-3">Técnico</th>
-          <th class="px-6 py-3">Área</th>
-          <th class="px-4 py-2">Observaciones</th>
-          <th class="px-6 py-3">Fecha Creación</th>
-          <th class="px-6 py-3">Fecha Cierre</th>
-          <th class="px-6 py-3">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let ticket of tickets"
+    <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
+  
+    <div *ngIf="!cargando && tickets.length > 0" class="overflow-x-auto">
+      <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
+        <thead class="bg-blue-100 text-blue-800 text-sm uppercase tracking-wider">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Asunto</th>
+            <th class="px-4 py-2">Descripción</th>
+            <th class="px-4 py-2">Estado</th>
+            <th class="px-4 py-2">Prioridad</th>
+            <th class="px-4 py-2">Creador</th>
+            <th class="px-4 py-2">Técnico</th>
+            <th class="px-4 py-2">Área</th>
+            <th class="px-4 py-2">Observaciones</th>
+            <th class="px-4 py-2">Creado</th>
+            <th class="px-4 py-2">Cierre</th>
+            <th class="px-4 py-2">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ticket of tickets"
             class="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors duration-200">
-          <td class="px-6 py-3">{{ ticket.id }}</td>
-          <td class="px-6 py-3">{{ ticket.asunto }}</td>
-          <td class="px-6 py-3 truncate max-w-xs">{{ ticket.descripcion }}</td>
-          <td class="px-6 py-3">{{ getNombreEstado(ticket.estado_id) }}</td>
-          <td class="px-6 py-3">{{ getNombrePrioridad(ticket.prioridad_id) }}</td>
-          <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_creador) }}</td>
-          <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
-          <td class="px-6 py-3">{{ getNombreArea(ticket.area_id) }}</td>
-          <td class="px-4 py-2">{{ ticket.observaciones || '-' }}</td>
-          <td class="px-6 py-3">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
-          <td class="px-6 py-3">
-            {{ ticket.fecha_cierre ? (ticket.fecha_cierre | date:'yyyy-MM-dd HH:mm') : '-' }}
-          </td>
-          <td class="px-6 py-3">
-            <!-- Solo el botón “Ver” que abre el modal -->
-            <button (click)="verTicket(ticket)"
-                    class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition"
-                    title="Ver detalles">
-              Ver
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td class="px-4 py-2">{{ ticket.id }}</td>
+            <td class="px-4 py-2">{{ ticket.asunto }}</td>
+            <td class="px-4 py-2 truncate max-w-[200px]">{{ ticket.descripcion }}</td>
+            <td class="px-4 py-2">{{ getNombreEstado(ticket.estado_id) }}</td>
+            <td class="px-4 py-2">{{ getNombrePrioridad(ticket.prioridad_id) }}</td>
+            <td class="px-4 py-2">{{ getNombreUsuario(ticket.id_creador) }}</td>
+            <td class="px-4 py-2">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
+            <td class="px-4 py-2">{{ getNombreArea(ticket.area_id) }}</td>
+            <td class="px-4 py-2">{{ ticket.observaciones }}</td>
+            <td class="px-4 py-2">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td class="px-4 py-2">{{ ticket.fecha_cierre ? (ticket.fecha_cierre | date:'yyyy-MM-dd HH:mm') : '-' }}</td>
+            <td class="px-4 py-2">
+              <button (click)="verTicket(ticket)"
+                class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition"
+                title="Ver detalles">
+                Ver
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div *ngIf="!cargando && tickets.length === 0" class="text-gray-600 mt-4 text-center">
+      No hay tickets disponibles.
+    </div>
   </div>
-
-  <div *ngIf="!cargando && tickets.length === 0" class="text-gray-600 mt-4 text-center">
-    No hay tickets disponibles.
-  </div>
-</div>
-
-<!-- Modal de Formulario -->
+  
+ <!-- Modal de Formulario -->
 <div *ngIf="mostrarFormulario" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
   <div class="bg-white w-full max-w-md max-h-[90vh] p-6 rounded-lg shadow-lg overflow-y-auto relative" style="min-width: 320px;">
     <!-- Título dinámico -->

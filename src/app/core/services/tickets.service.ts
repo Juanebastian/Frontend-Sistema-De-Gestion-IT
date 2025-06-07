@@ -27,7 +27,7 @@ export class TicketService {
       headers: this.getAuthHeaders(),
     }).pipe(
       catchError((err) => {
-        console.error('❌ Error al crear ticket:', err);
+        console.error(' Error al crear ticket:', err);
         return throwError(() => err);
       })
     );
@@ -39,7 +39,7 @@ export class TicketService {
       headers: this.getAuthHeaders(),
     }).pipe(
       catchError((err) => {
-        console.error('❌ Error al obtener tickets:', err);
+        console.error(' Error al obtener tickets:', err);
         return throwError(() => err);
       })
     );
@@ -51,7 +51,7 @@ export class TicketService {
       headers: this.getAuthHeaders(),
     }).pipe(
       catchError((err) => {
-        console.error('❌ Error al actualizar ticket:', err);
+        console.error(' Error al actualizar ticket:', err);
         return throwError(() => err);
       })
     );
@@ -63,26 +63,40 @@ export class TicketService {
       headers: this.getAuthHeaders(),
     }).pipe(
       catchError((err) => {
-        console.error(`❌ Error al obtener ticket con ID ${ticketId}:`, err);
+        console.error(` Error al obtener ticket con ID ${ticketId}:`, err);
         return throwError(() => err);
       })
     );
   }
 
 
-    /** Cierra un ticket usando PUT /tickets/{id}/cerrar */
-    cerrarTicket(ticketId: number): Observable<any> {
-      return this.http
-        .put(
-          `${this.apiUrl}/${ticketId}/cerrar`,
-          {}, // no enviamos body
-          { headers: this.getAuthHeaders() }
-        )
-        .pipe(
-          catchError((err) => {
-            console.error(`❌ Error al cerrar ticket ${ticketId}:`, err);
-            return throwError(() => err);
-          })
-        );
+
+  cerrarTicket(ticketId: number, observaciones?: string): Observable<any> {
+    const body = observaciones !== undefined
+      ? { observaciones }
+      : {};
+
+    return this.http.put(
+      `${this.apiUrl}/${ticketId}/cerrar`,
+      body,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError((err) => {
+        console.error(` Error al cerrar ticket ${ticketId}:`, err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  
+    getTicketsByTecnicoId(id_tecnico: number): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/tecnico/${id_tecnico}`, {
+        headers: this.getAuthHeaders(),
+      }).pipe(
+        catchError((err) => {
+          console.error(` Error al obtener tickets del técnico con ID ${id_tecnico}:`, err);
+          return throwError(() => err);
+        })
+      );
     }
 }

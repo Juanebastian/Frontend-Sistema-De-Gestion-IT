@@ -39,7 +39,7 @@ export class AuthService {
       tap(response => {
         if (response.success && response.data) {
           this.saveToken(response.data.access_token);
-          this.decodeAndSaveUserFromToken(); // <- Aquí decodificamos
+         
           this.authState.next(true);
         } else {
           throw new Error(response.message || 'Error al iniciar sesión');
@@ -55,7 +55,6 @@ export class AuthService {
 
   logout(): void {
     this.clearToken();
-    this.clearUserInfo();
     this.authState.next(false);
     this.router.navigate(['/']);
   }
@@ -72,47 +71,37 @@ export class AuthService {
     localStorage.setItem('auth_token', token);
   }
 
-  private saveUserInfo(usuario: any): void {
-    localStorage.setItem('user_info', JSON.stringify(usuario));
-  }
 
   getUserInfo(): any {
-    if (isPlatformBrowser(this.platformId)) {
-      const user = localStorage.getItem('user_info'); // ✅ clave correcta
-      return user ? JSON.parse(user) : null;
-    }
-    return null;
+    return this.getDecodedToken();
+  }
+  
+  getUserId(): string | null {
+    const user = this.getDecodedToken();
+    return user?.id || null;
   }
 
   private clearToken(): void {
     localStorage.removeItem('auth_token');
   }
 
-  private clearUserInfo(): void {
-    localStorage.removeItem('user_info');
-  }
-
+ 
   private hasToken(): boolean {
     return !!localStorage.getItem('auth_token');
   }
 
-  getUserId(): string | null {
-    const user = this.getUserInfo();
-    return user?.id || null;
-  }
 
-  /**
-   * Decodifica el token y guarda los datos del usuario
-   */
-  private decodeAndSaveUserFromToken(): void {
+
+
+  getDecodedToken(): any | null {
     const token = this.getToken();
-    if (!token) return;
-
+    if (!token) return null;
+  
     try {
-      const decoded = jwtDecode<any>(token);
-      this.saveUserInfo(decoded); // Guarda los datos: id, nombre, correo, etc.
+      return jwtDecode<any>(token);
     } catch (error) {
       console.error('Error al decodificar el token JWT:', error);
+      return null;
     }
   }
 }

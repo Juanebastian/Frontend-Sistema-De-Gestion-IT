@@ -12,7 +12,6 @@ import { UserService } from '../../../../core/services/user.service';
 import { Computador } from '../../../../core/models/computer.model';
 
 
-
 @Component({
   selector: 'app-equipos-list',
   standalone: true,
@@ -146,7 +145,7 @@ export class EquiposListComponent implements OnInit {
     const userId = this.authService.getUserId();
 
     if (!userId) {
-      alert('❌ No se pudo obtener el usuario autenticado.');
+      alert(' No se pudo obtener el usuario autenticado.');
       return;
     }
 
@@ -155,25 +154,25 @@ export class EquiposListComponent implements OnInit {
     if (this.computadorEditando) {
       this.computerService.updateComputer(this.computadorEditando.id!, this.nuevoComputador).subscribe({
         next: () => {
-          alert('✅ Computador actualizado correctamente');
+          alert(' Computador actualizado correctamente');
           this.cargarComputadores();
           this.cerrarFormulario();
         },
         error: (err) => {
-          console.error('❌ Error al actualizar computador:', err);
-          alert('❌ Error al actualizar computador');
+          console.error(' Error al actualizar computador:', err);
+          alert(' Error al actualizar computador');
         }
       });
     } else {
       this.computerService.registerComputer(this.nuevoComputador).subscribe({
         next: () => {
-          alert('✅ Computador registrado con éxito');
+          alert(' Computador registrado con éxito');
           this.cargarComputadores();
           this.cerrarFormulario();
         },
         error: (err) => {
-          console.error('❌ Error al registrar computador:', err);
-          alert('❌ Error al registrar computador');
+          console.error(' Error al registrar computador:', err);
+          alert(' Error al registrar computador');
         }
       });
     }

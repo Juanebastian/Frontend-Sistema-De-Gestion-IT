@@ -9,6 +9,7 @@ export interface Ticket {
     id_creador: number;
     id_tecnico: number;
     area_id: number;
+    observaciones : string;
     fecha_creacion?: string;
     fecha_actualizacion?: string;
     fecha_cierre?: string | null;
