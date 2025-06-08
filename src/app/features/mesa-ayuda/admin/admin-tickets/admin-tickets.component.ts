@@ -6,7 +6,7 @@ import { UserService } from '../../../../core/services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { Ticket , Estado , Prioridad} from '../../../../core/models/ticket.model';
+import { Ticket, Estado, Prioridad } from '../../../../core/models/ticket.model';
 import { Area } from '../../../../core/models/area.model';
 import { Usuario } from '../../../../core/models/user.model';
 
@@ -19,8 +19,16 @@ import { Usuario } from '../../../../core/models/user.model';
 export class AdminTicketsComponent implements OnInit {
   tickets: Ticket[] = [];
   areas: Area[] = [];
-   usuarios: Usuario[] = [];
-   ticketsAbiertosCount: number = 0;
+  usuarios: Usuario[] = [];
+  ticketsAbiertosCount: number = 0;
+  ticketsEnProcesoCount: number = 0;
+  ticketsCerradosCount: number = 0;
+
+  ticketsFiltrados: Ticket[] = [];
+  filtroTexto: string = '';
+  paginaActual: number = 1;
+  itemsPorPagina: number = 5;
+  ticketsFiltradosTotales: Ticket[] = [];
 
   estados: Estado[] = [
     { id: 1, nombre: 'Abierto' },
@@ -48,7 +56,7 @@ export class AdminTicketsComponent implements OnInit {
     private areaService: AreaService,
     private userService: UserService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarTickets();
@@ -76,8 +84,10 @@ export class AdminTicketsComponent implements OnInit {
     this.ticketService.getAllTickets().subscribe({
       next: (data) => {
         this.tickets = data;
-        // Filtrar los tickets con estado_id = 1 (Abierto)
+        this.aplicarFiltroYPaginacion();
         this.ticketsAbiertosCount = this.tickets.filter(t => t.estado_id === 1).length;
+        this.ticketsEnProcesoCount = this.tickets.filter(t => t.estado_id === 2).length;
+        this.ticketsCerradosCount = this.tickets.filter(t => t.estado_id === 3).length;
         this.cargando = false;
       },
       error: (err) => {
@@ -87,6 +97,71 @@ export class AdminTicketsComponent implements OnInit {
       }
     });
   }
+
+
+
+  // Método para filtrar y paginar la lista
+
+
+
+  aplicarFiltroYPaginacion(): void {
+    const texto = this.filtroTexto.toLowerCase();
+
+    // Filtramos
+    const filtrados = this.tickets.filter(ticket => {
+      const datos = [
+        ticket.id?.toString(),
+        ticket.asunto,
+        ticket.descripcion,
+        this.getNombreEstado(ticket.estado_id),
+        this.getNombrePrioridad(ticket.prioridad_id),
+        this.getNombreUsuario(ticket.id_creador),
+        this.getNombreUsuario(ticket.id_tecnico),
+        this.getNombreArea(ticket.area_id),
+        ticket.observaciones,
+        ticket.fecha_creacion ? new Date(ticket.fecha_creacion).toLocaleString() : '',
+        ticket.fecha_cierre ? new Date(ticket.fecha_cierre).toLocaleString() : ''
+      ]
+        .filter(campo => campo !== undefined && campo !== null)
+        .map(campo => campo!.toString().toLowerCase())
+        .join(' ');
+
+      return datos.includes(texto);
+    });
+
+
+
+    // Guardamos los totales filtrados
+    this.ticketsFiltradosTotales = filtrados;
+
+    // Aplicamos paginación
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = inicio + this.itemsPorPagina;
+    this.ticketsFiltrados = filtrados.slice(inicio, fin);
+  }
+
+
+
+
+  // Método para manejar cambio de página
+  cambiarPagina(nuevaPagina: number) {
+    this.paginaActual = nuevaPagina;
+    this.aplicarFiltroYPaginacion();
+  }
+
+  // Método para cuando cambia el filtro
+  onFiltroChange() {
+    this.paginaActual = 1;  // resetear a la página 1 al cambiar filtro
+    this.aplicarFiltroYPaginacion();
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.ticketsFiltradosTotales.length / this.itemsPorPagina);
+  }
+
+
+
+
 
   cargarAreas(): void {
     this.areaService.getAllAreas().subscribe({
@@ -213,10 +288,10 @@ export class AdminTicketsComponent implements OnInit {
   }
 
 
- cerrarTicket(ticket: Ticket): void {
+  cerrarTicket(ticket: Ticket): void {
     // Actualizo los campos localmente para reflejar cierre
     ticket.estado_id = 3; // “Cerrado”
-   
+
 
     // 1) EXTRAIGO LA OBSERVACIÓN que el usuario haya escrito en el modal
     const textoObs = ticket.observaciones || '';

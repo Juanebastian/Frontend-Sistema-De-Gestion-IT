@@ -1,10 +1,12 @@
 // sidebar.component.ts
 
-import { Component, Input, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, Input, signal, computed, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { TicketService } from '../../core/services/tickets.service';
 import { AuthService } from '../../core/services/auth.service';
+import { Subscription, interval } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 
 interface NavItem {
   path: string;
@@ -12,7 +14,7 @@ interface NavItem {
   label: string;
   children?: NavItem[];
   exact?: boolean;
-  requiredRole?: number;   // 1 = administrador, 2 = técnico
+  requiredRole?: number;   // 1 = administrador, 2 = técnico, 3 = colaborador
 }
 
 @Component({
@@ -22,7 +24,7 @@ interface NavItem {
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   // Sólo guardamos los contadores (nunca la lista completa).
   ticketsAbiertosCount = signal<number>(0);
   ticketsEnProcesoByTecCount = signal<number>(0);
@@ -31,8 +33,10 @@ export class SidebarComponent implements OnInit {
   cargandoCount = signal<boolean>(false);
   errorCount = signal<string>('');
 
-  // Rol del usuario (1=administrador, 2=técnico)
+  // Rol del usuario (1=administrador, 2=técnico, 3=colaborador)
   rolUsuario = signal<number>(0);
+  
+  private subscriptions = new Subscription();
 
   constructor(
     private ticketService: TicketService,
@@ -43,12 +47,11 @@ export class SidebarComponent implements OnInit {
 
   @Input() collapsed = false;
 
-  // Control de submenús “abiertos”
+  // Control de submenús "abiertos"
   readonly expandedMenus = signal<Set<string>>(new Set());
   readonly hoveredItem = signal<string | null>(null);
   readonly shouldShowTooltip = computed(() => this.collapsed);
 
-  // —————— Aquí hemos corregido los `icon` con las rutas Heroicons correctas ——————
   readonly navItems: NavItem[] = [
     // ––––––– Administrador –––––––––
     {
@@ -132,6 +135,21 @@ export class SidebarComponent implements OnInit {
       requiredRole: 2
     },
 
+    // ––––––– Colaboradores –––––––––
+    {
+      path: '/colaboradores/home',
+      icon: 'M2.25 21.75c0-.621.504-1.125 1.125-1.125h17.25c.621 0 1.125.504 1.125 1.125v.75c0 .621-.504 1.125-1.125 1.125H3.375c-.621 0-1.125-.504-1.125-1.125v-.75zm0 0v-8.25A2.25 2.25 0 014.5 11.25h15a2.25 2.25 0 012.25 2.25v8.25',
+      label: 'Dashboard',
+      exact: true,
+      requiredRole: 3
+    },
+    {
+      path: '/colaboradores/tickets',
+      icon: 'M3 5.25h18M3 8.25h18M3 11.25h18M3 14.25h18',
+      label: 'Mesa De Ayuda',
+      requiredRole: 3
+    },
+
     // ––––––– Todos –––––––––
     {
       path: '/reports',
@@ -147,33 +165,105 @@ export class SidebarComponent implements OnInit {
 
   // Filtra ítems según el rol actual
   readonly filteredNavItems = computed(() => {
+    const rol = this.rolUsuario();
+    console.log('Calculando filteredNavItems para rol:', rol); // Debug
     return this.navItems.filter(item => {
       if (!item.requiredRole) return true;
-      return item.requiredRole === this.rolUsuario();
+      return item.requiredRole === rol;
     });
   });
 
   ngOnInit(): void {
-    // 1) Leer rol del token
-    const user = this.authService.getUserInfo();
-    if (user && user.rol_id) {
-      this.rolUsuario.set(Number(user.rol_id));
-    }
+    this.initializeUserRole();
+  }
 
-    // 2) Sólo llamar a la función que corresponda (para no hacer llamadas innecesarias)
-    if (this.rolUsuario() === 1) {
-      this.cargarCountAdministradores();
-    } else if (this.rolUsuario() === 2) {
-      this.cargarCountTecnico();
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  // SOLUCIÓN 1: Método mejorado para inicializar el rol
+  private initializeUserRole(): void {
+    // Intentar obtener el rol inmediatamente
+    this.tryGetUserRole();
+    
+    // Si no se obtuvo el rol, reintentar cada 100ms hasta obtenerlo (máximo 20 intentos = 2 segundos)
+    if (this.rolUsuario() === 0) {
+      const subscription = interval(100).pipe(
+        takeWhile(() => this.rolUsuario() === 0, true)
+      ).subscribe({
+        next: (attempt) => {
+          console.log(`Intento ${attempt + 1} de obtener rol de usuario`);
+          this.tryGetUserRole();
+          
+          // Si después de 20 intentos no se obtiene, parar
+          if (attempt >= 19) {
+            console.warn('No se pudo obtener el rol del usuario después de 20 intentos');
+            subscription.unsubscribe();
+          }
+        }
+      });
+      
+      this.subscriptions.add(subscription);
+    }
+  }
+
+  private tryGetUserRole(): void {
+    try {
+      const user = this.authService.getUserInfo();
+      console.log('Usuario obtenido:', user); // Debug
+      
+      if (user && user.rol_id) {
+        const rol = Number(user.rol_id);
+        console.log('Rol establecido:', rol); // Debug
+        this.rolUsuario.set(rol);
+        
+        // Cargar contadores según el rol
+        this.loadCountersForRole(rol);
+      } else {
+        // SOLUCIÓN 2: Intentar obtener desde localStorage directamente
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (payload.rol_id) {
+              const rol = Number(payload.rol_id);
+              console.log('Rol obtenido desde token directo:', rol); // Debug
+              this.rolUsuario.set(rol);
+              this.loadCountersForRole(rol);
+            }
+          } catch (error) {
+            console.error('Error al decodificar token:', error);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error al obtener información del usuario:', error);
+    }
+  }
+
+  private loadCountersForRole(rol: number): void {
+    switch (rol) {
+      case 1:
+        this.cargarCountAdministradores();
+        break;
+      case 2:
+        this.cargarCountTecnico();
+        break;
+      case 3:
+        // Para colaboradores, podrías agregar lógica específica si es necesaria
+        console.log('Usuario colaborador - no se cargan contadores específicos');
+        break;
+      default:
+        console.log('Rol no reconocido:', rol);
     }
   }
 
   private cargarCountAdministradores() {
     this.cargandoCount.set(true);
     this.errorCount.set('');
-    this.ticketService.getAllTickets().subscribe({
+    
+    const subscription = this.ticketService.getAllTickets().subscribe({
       next: all => {
-        // Contar “abiertos” (estado_id === 1)
         const abiertos = all.filter(t => t.estado_id === 1).length;
         this.ticketsAbiertosCount.set(abiertos);
         this.cargandoCount.set(false);
@@ -184,20 +274,23 @@ export class SidebarComponent implements OnInit {
         this.cargandoCount.set(false);
       }
     });
+    
+    this.subscriptions.add(subscription);
   }
 
   private cargarCountTecnico() {
     this.cargandoCount.set(true);
     this.errorCount.set('');
     const idTec = Number(this.authService.getUserId());
+    
     if (!idTec) {
       this.errorCount.set('No se obtuvo ID del técnico');
       this.cargandoCount.set(false);
       return;
     }
-    this.ticketService.getTicketsByTecnicoId(idTec).subscribe({
+    
+    const subscription = this.ticketService.getTicketsByTecnicoId(idTec).subscribe({
       next: byTec => {
-        // Ejemplo: contar “en proceso” (estado_id === 2)
         const enProceso = byTec.filter(t => t.estado_id === 2).length;
         this.ticketsEnProcesoByTecCount.set(enProceso);
         this.cargandoCount.set(false);
@@ -208,6 +301,8 @@ export class SidebarComponent implements OnInit {
         this.cargandoCount.set(false);
       }
     });
+    
+    this.subscriptions.add(subscription);
   }
 
   // Métodos auxiliares (submenús, hover, active, etc.)

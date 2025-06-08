@@ -9,5 +9,8 @@ export const routes: Routes = [
     {path: 'tecnicos',
         loadChildren: () => import('./features/usuarios/tecnicos/tecnicos-layout/tecnicos.routes')
     },
+    {path: 'colaboradores',
+        loadChildren: () => import('./features/usuarios/colaboradores/colaboradores-layout/colaboradores.routes')
+    },
     { path: 'login', component: LoginComponent }
 ];

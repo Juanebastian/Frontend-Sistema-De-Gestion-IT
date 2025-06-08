@@ -31,6 +31,13 @@ export class EquiposListComponent implements OnInit {
   mostrarFormulario = false;
   computadorEditando: Computador | null = null;
   nuevoComputador: Computador = this.obtenerComputadorVacio();
+  
+
+  computadoresFiltrados: Computador[] = [];
+  filtroTexto: string = '';
+  paginaActual: number = 1;
+  itemsPorPagina: number = 8;
+  computadoresFiltradosTotales: Computador[] = [];
 
   constructor(
     private computerService: ComputerService, 
@@ -54,10 +61,10 @@ export class EquiposListComponent implements OnInit {
   cargarComputadores(): void {
     this.cargando = true;
     this.error = '';
-
     this.computerService.getAllComputers().subscribe({
       next: (data) => {
         this.computadores = data;
+        this.aplicarFiltroYPaginacion();  // Aplicar filtro y paginación cuando cargue
         this.cargando = false;
       },
       error: (err) => {
@@ -67,6 +74,69 @@ export class EquiposListComponent implements OnInit {
       },
     });
   }
+
+  // Método para filtrar y paginar la lista
+
+  
+  aplicarFiltroYPaginacion(): void {
+    const texto = this.filtroTexto.toLowerCase();
+  
+    // Filtramos
+    const filtrados = this.computadores.filter(pc => {
+      const datos = [
+        this.getNombreMarca(pc.marca_id),
+        this.getNombreModelo(pc.modelo_id),
+        this.getNombreSO(pc.sistema_operativo_id),
+        this.getNombreTipoPC(pc.tipo_id),
+        this.getNombreArea(pc.area_id),
+        this.getNombreUsuario(pc.id_registrado_por),
+        pc.ram?.toString(),
+        pc.disco_duro?.toString(),
+        pc.serie,
+        pc.codigo_inventario,
+        pc.fecha_adquisicion,
+        pc.fecha_creacion,
+        pc.fecha_actualizacion,
+        pc.activo ? 'activo' : 'inactivo'
+      ]
+      .filter(campo => campo !== undefined && campo !== null)
+      .map(campo => campo!.toString().toLowerCase())
+      .join(' ');
+  
+      return datos.includes(texto);
+    });
+  
+    // Guardamos los totales filtrados
+    this.computadoresFiltradosTotales = filtrados;
+  
+    // Aplicamos paginación
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = inicio + this.itemsPorPagina;
+    this.computadoresFiltrados = filtrados.slice(inicio, fin);
+  }
+  
+
+
+
+  // Método para manejar cambio de página
+  cambiarPagina(nuevaPagina: number) {
+    this.paginaActual = nuevaPagina;
+    this.aplicarFiltroYPaginacion();
+  }
+
+  // Método para cuando cambia el filtro
+  onFiltroChange() {
+    this.paginaActual = 1;  // resetear a la página 1 al cambiar filtro
+    this.aplicarFiltroYPaginacion();
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.computadoresFiltradosTotales.length / this.itemsPorPagina);
+  }
+  
+
+  // Métodos para cargar datos de áreas, marcas, modelos, sistemas operativos y usuarios
+
 
   cargarAreas(): void {
     this.areaService.getAllAreas().subscribe({
@@ -178,6 +248,7 @@ export class EquiposListComponent implements OnInit {
     }
   }
 
+
   obtenerComputadorVacio(): Computador {
     return {
       marca_id: 0,
@@ -232,5 +303,8 @@ export class EquiposListComponent implements OnInit {
     return usuario ? usuario.nombre : 'Desconocido';
   }
 
+
+
+  
   
 }

@@ -11,6 +11,12 @@
       <p class="text-sm text-gray-600">
         Abiertos: <span class="font-semibold">{{ ticketsAbiertosCount }}</span>
       </p>
+      <p class="text-sm text-gray-600">
+        Tickets En Proceso: {{ ticketsEnProcesoCount }}
+      </p>
+      <p class="text-sm text-gray-600">
+        Tickets Cerrados: {{ ticketsCerradosCount }}
+      </p>
       <button (click)="abrirFormulario()"
               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm rounded-md transition duration-200">
         + Nuevo Ticket
@@ -24,6 +30,16 @@
   </div>
   <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
 
+  <div class="mb-4">
+    <input
+      type="text"
+      placeholder="Buscar..."
+      [(ngModel)]="filtroTexto"
+      (input)="onFiltroChange()"
+      class="border rounded px-3 py-1 w-full max-w-sm"
+    />
+  </div>
+
   <div *ngIf="!cargando && tickets.length" class="overflow-x-auto">
     <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
       <thead class="bg-blue-100 text-blue-800 text-sm uppercase tracking-wider">
@@ -34,16 +50,16 @@
           <th class="px-6 py-3">Estado</th>
           <th class="px-6 py-3">Prioridad</th>
           <th class="px-6 py-3">Creador</th>
-          <th class="px-6 py-3">Técnico</th>
+          <th class="px-6 py-3">Técnico_A_Cargo</th>
           <th class="px-6 py-3">Área</th>
           <th class="px-4 py-2">Observaciones</th>
-          <th class="px-6 py-3">Fecha Creación</th>
-          <th class="px-6 py-3">Fecha Cierre</th>
+          <th class="px-6 py-3">Fecha_Creación</th>
+          <th class="px-6 py-3">Fecha_Cierre</th>
           <th class="px-6 py-3">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let ticket of tickets"
+        <tr *ngFor="let ticket of ticketsFiltrados"
             class="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors duration-200">
           <td class="px-6 py-3">{{ ticket.id }}</td>
           <td class="px-6 py-3">{{ ticket.asunto }}</td>
@@ -69,6 +85,25 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center items-center mt-4 gap-4">
+      <button
+        (click)="cambiarPagina(paginaActual - 1)"
+        [disabled]="paginaActual === 1"
+        class="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+      >
+        Anterior
+      </button>
+
+      <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+
+      <button
+        (click)="cambiarPagina(paginaActual + 1)"
+        [disabled]="ticketsFiltrados.length < itemsPorPagina"
+        class="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+      >
+        Siguiente
+      </button>
+    </div>
   </div>
 
   <div *ngIf="!cargando && tickets.length === 0" class="text-gray-600 mt-4 text-center">

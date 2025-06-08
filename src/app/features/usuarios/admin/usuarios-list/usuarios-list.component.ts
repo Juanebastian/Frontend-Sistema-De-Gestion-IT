@@ -25,6 +25,15 @@ export class UsuariosListComponent implements OnInit {
 
   nuevoUsuario: any = this.usuarioVacio();
 
+    usuariosFiltrados: Usuario[] = [];
+    filtroTexto: string = '';
+    paginaActual: number = 1;
+    itemsPorPagina: number = 10;
+    usuariosFiltradosTotales: Usuario[] = [];
+    
+  
+
+
   constructor(
     private userService: UserService,
     private areaService: AreaService     
@@ -53,6 +62,7 @@ export class UsuariosListComponent implements OnInit {
     this.userService.getAllUsers().subscribe({
       next: (data) => {
         this.usuarios = data;
+        this.aplicarFiltroYPaginacion();  
         this.cargando = false;
       },
       error: (err) => {
@@ -62,6 +72,60 @@ export class UsuariosListComponent implements OnInit {
       }
     });
   }
+
+
+
+  // Método para filtrar y paginar la lista
+
+  
+  aplicarFiltroYPaginacion(): void {
+    const texto = this.filtroTexto.toLowerCase();
+  
+    this.usuariosFiltradosTotales = this.usuarios.filter(usuario => {
+      const datos = [
+        usuario.nombre,
+        usuario.cedula,
+        usuario.correo,
+        this.getNombreRol(usuario.rol_id),
+        this.getNombreArea(usuario.area_id),
+        usuario.activo ? 'activo' : 'inactivo'
+      ]
+        .filter(campo => campo !== undefined && campo !== null)
+        .map(campo => campo!.toString().toLowerCase())
+        .join(' ');
+  
+      return datos.includes(texto);
+    });
+  
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = inicio + this.itemsPorPagina;
+  
+    this.usuariosFiltrados = this.usuariosFiltradosTotales.slice(inicio, fin);
+  }
+
+
+  // Método para manejar cambio de página
+  cambiarPagina(nuevaPagina: number) {
+    this.paginaActual = nuevaPagina;
+    this.aplicarFiltroYPaginacion();
+  }
+
+  // Método para cuando cambia el filtro
+  onFiltroChange() {
+    this.paginaActual = 1;  // resetear a la página 1 al cambiar filtro
+    this.aplicarFiltroYPaginacion();
+  }
+
+
+
+  get totalPaginas(): number {
+    return Math.ceil(this.usuariosFiltradosTotales.length / this.itemsPorPagina);
+  }
+  
+
+
+
+
 
   cargarAreas(): void {
     this.areaService.getAllAreas().subscribe({

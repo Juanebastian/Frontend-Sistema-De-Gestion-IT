@@ -2,7 +2,7 @@
        class="bg-white/95 backdrop-blur-sm h-full shadow-lg border-r border-gray-200/50 transition-all duration-300 flex flex-col overflow-hidden">
   
   <!-- ========== Header ========== -->
-  <div class="flex items-center justify-center h-18 border-b border-gray-200/50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white relative">
+  <div class="flex items-center justify-center h-18 border-b border-blue-800 bg-blue-900 text-white relative">
     <div class="absolute inset-0 bg-black/10"></div>
     <div class="relative z-10 flex items-center space-x-3">
       <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
@@ -13,7 +13,7 @@
       <div class="overflow-hidden transition-all duration-300" [class]="collapsed ? 'w-0' : 'w-auto'">
         <span class="text-lg font-bold whitespace-nowrap">Sistema De Gestión IT</span>
         <p class="text-sm font-medium" *ngIf="!collapsed">
-          {{ rolUsuario() === 1 ? 'Administrador' : (rolUsuario() === 2 ? 'Técnico' : '') }}
+          {{ rolUsuario() === 1 ? 'Administrador' : (rolUsuario() === 2 ? 'Técnico' : (rolUsuario() === 3 ? 'Colaborador' : '')) }}
         </p>
       </div>
     </div>
@@ -129,6 +129,8 @@
                     class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                 {{ ticketsEnProcesoByTecCount() }}
               </span>
+
+              
             </ng-container>
             <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
           </div>
