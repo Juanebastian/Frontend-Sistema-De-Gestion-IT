@@ -27,7 +27,7 @@ export class AdminTicketsComponent implements OnInit {
   ticketsFiltrados: Ticket[] = [];
   filtroTexto: string = '';
   paginaActual: number = 1;
-  itemsPorPagina: number = 5;
+  itemsPorPagina: number = 7;
   ticketsFiltradosTotales: Ticket[] = [];
 
   estados: Estado[] = [

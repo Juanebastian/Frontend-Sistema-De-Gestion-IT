@@ -49,12 +49,12 @@
           <th class="px-6 py-3">Descripción</th>
           <th class="px-6 py-3">Estado</th>
           <th class="px-6 py-3">Prioridad</th>
-          <th class="px-6 py-3">Creador</th>
-          <th class="px-6 py-3">Técnico_A_Cargo</th>
+          <th class="px-6 py-3">Usuario Creador</th>
+          <th class="px-6 py-3">Técnico Asignado</th>
           <th class="px-6 py-3">Área</th>
           <th class="px-4 py-2">Observaciones</th>
-          <th class="px-6 py-3">Fecha_Creación</th>
-          <th class="px-6 py-3">Fecha_Cierre</th>
+          <th class="px-6 py-3">Fecha Creación</th>
+          <th class="px-6 py-3]">Fecha Cierre</th>
           <th class="px-6 py-3">Acciones</th>
         </tr>
       </thead>
@@ -62,16 +62,16 @@
         <tr *ngFor="let ticket of ticketsFiltrados"
             class="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors duration-200">
           <td class="px-6 py-3">{{ ticket.id }}</td>
-          <td class="px-6 py-3">{{ ticket.asunto }}</td>
+          <td class="px-6 py-3 truncate max-w-xs">{{ ticket.asunto }}</td>
           <td class="px-6 py-3 truncate max-w-xs">{{ ticket.descripcion }}</td>
           <td class="px-6 py-3">{{ getNombreEstado(ticket.estado_id) }}</td>
           <td class="px-6 py-3">{{ getNombrePrioridad(ticket.prioridad_id) }}</td>
-          <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_creador) }}</td>
-          <td class="px-6 py-3">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
+          <td class="px-6 py-3 min-w-[200px]">{{ getNombreUsuario(ticket.id_creador) }}</td>
+          <td class="px-6 py-3 min-w-[200px]">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
           <td class="px-6 py-3">{{ getNombreArea(ticket.area_id) }}</td>
-          <td class="px-4 py-2">{{ ticket.observaciones || '-' }}</td>
-          <td class="px-6 py-3">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
-          <td class="px-6 py-3">
+          <td class="px-6 py-3 truncate max-w-xs">{{ ticket.observaciones || '-' }}</td>
+          <td class="px-6 py-3 min-w-[180px]">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
+          <td class="px-6 py-3 min-w-[180px]">
             {{ ticket.fecha_cierre ? (ticket.fecha_cierre | date:'yyyy-MM-dd HH:mm') : '-' }}
           </td>
           <td class="px-6 py-3">
@@ -234,7 +234,8 @@
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option [value]="0" disabled>Seleccione un Técnico</option>
-            <option *ngFor="let usuario of usuarios" [value]="usuario.id">
+            <!-- Filtrar usuarios con rol_id === 2 -->
+            <option *ngFor="let usuario of usuarios" [value]="usuario.id" [hidden]="usuario.rol_id !== 2">
               {{ usuario.nombre }}
             </option>
           </select>
