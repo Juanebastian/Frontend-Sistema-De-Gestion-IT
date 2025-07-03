@@ -32,15 +32,23 @@
     {{ error }}
   </div>
 
-  <div class="mb-4">
-    <input
-      type="text"
-      placeholder="Buscar..."
-      [(ngModel)]="filtroTexto"
-      (input)="onFiltroChange()"
-      class="border rounded px-3 py-1 w-full max-w-sm"
-    />
-  </div>
+<!-- Center Section: Search -->
+    <div class="hidden lg:flex items-center flex-1 max-w-md mx-8 mb-4">
+      <div class="relative w-full">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          placeholder="Buscar..."
+          [(ngModel)]="filtroTexto"
+          (input)="onFiltroChange()"
+          class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:shadow-lg focus:scale-105 transition-all duration-200 text-sm placeholder-gray-400">
+      </div>
+    </div>
 
   <div *ngIf="!cargando && computadores.length" class="overflow-x-auto">
     <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
@@ -52,7 +60,7 @@
           <th class="px-6 py-3">SO ID</th>
           <th class="px-6 py-3">Tipo ID</th>
           <th class="px-6 py-3">Área</th>
-          <th class="px-6 py-3">Registrado Por</th>
+          <th class="px-6 py-3 min-w-[200px]">Registrado Por</th>
           <th class="px-6 py-3">RAM (GB)</th>
           <th class="px-6 py-3">Disco Duro (TB)</th>
           <th class="px-6 py-3">Serie</th>
@@ -75,7 +83,7 @@
           <td class="px-6 py-3">{{ getNombreSO(pc.sistema_operativo_id) }}</td>
           <td class="px-6 py-3">{{ getNombreTipoPC(pc.tipo_id) }}</td>
           <td class="px-6 py-3">{{ getNombreArea(pc.area_id) }}</td>
-          <td class="px-6 py-3">{{ getNombreUsuario(pc.id_registrado_por) }}</td>
+          <td class="px-6 py-3 min-w-[200px]s">{{ getNombreUsuario(pc.id_registrado_por) }}</td>
           <td class="px-6 py-3">{{ pc.ram }}</td>
           <td class="px-6 py-3">{{ pc.disco_duro }}</td>
           <td class="px-6 py-3">{{ pc.serie }}</td>

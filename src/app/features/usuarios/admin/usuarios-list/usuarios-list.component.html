@@ -1,4 +1,4 @@
-<div class="p-6 bg-white rounded-2xl shadow-xl relative">
+<div class="p-4 bg-white rounded-2xl shadow-xl relative">
   <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -18,6 +18,10 @@
     </div>
   </h2>
 
+
+
+
+
   <!-- Estados -->
   <div *ngIf="cargando" class="flex items-center gap-2 text-blue-600 font-medium">
     <span class="animate-spin h-5 w-5 border-4 border-blue-300 border-t-transparent rounded-full"></span>
@@ -25,15 +29,26 @@
   </div>
   <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
 
-  <div class="mb-4">
-    <input
-      type="text"
-      placeholder="Buscar..."
-      [(ngModel)]="filtroTexto"
-      (input)="onFiltroChange()"
-      class="border rounded px-3 py-1 w-full max-w-sm"
-    />
-  </div>
+
+
+<!-- Center Section: Search -->
+    <div class="hidden lg:flex items-center flex-1 max-w-md mx-8 mb-4">
+      <div class="relative w-full">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          placeholder="Buscar..."
+          [(ngModel)]="filtroTexto"
+          (input)="onFiltroChange()"
+          class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:shadow-lg focus:scale-105 transition-all duration-200 text-sm placeholder-gray-400">
+      </div>
+    </div>
+
 
   <!-- Tabla -->
   <div *ngIf="!cargando && usuarios.length" class="overflow-x-auto">

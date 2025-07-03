@@ -28,7 +28,7 @@ export class UsuariosListComponent implements OnInit {
     usuariosFiltrados: Usuario[] = [];
     filtroTexto: string = '';
     paginaActual: number = 1;
-    itemsPorPagina: number = 10;
+    itemsPorPagina: number = 5;
     usuariosFiltradosTotales: Usuario[] = [];
     
   

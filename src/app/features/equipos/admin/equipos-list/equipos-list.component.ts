@@ -36,7 +36,7 @@ export class EquiposListComponent implements OnInit {
   computadoresFiltrados: Computador[] = [];
   filtroTexto: string = '';
   paginaActual: number = 1;
-  itemsPorPagina: number = 8;
+  itemsPorPagina: number = 5;
   computadoresFiltradosTotales: Computador[] = [];
 
   constructor(
