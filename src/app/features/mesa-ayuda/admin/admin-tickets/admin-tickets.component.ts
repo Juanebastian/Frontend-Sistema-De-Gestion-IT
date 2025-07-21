@@ -27,7 +27,7 @@ export class AdminTicketsComponent implements OnInit {
   ticketsFiltrados: Ticket[] = [];
   filtroTexto: string = '';
   paginaActual: number = 1;
-  itemsPorPagina: number = 5;
+  itemsPorPagina: number = 10;
   ticketsFiltradosTotales: Ticket[] = [];
 
   estados: Estado[] = [
@@ -238,7 +238,10 @@ export class AdminTicketsComponent implements OnInit {
       return;
     }
 
-    this.ticketForm.id_creador = Number(userId);
+    // Solo asignar el id_creador si se está creando un ticket nuevo
+    if (!this.modoAsignar) {
+      this.ticketForm.id_creador = Number(userId);
+    }
 
     if (this.modoAsignar) {
       // Guardar asignación (prioridad + técnico, estado ya en 2)

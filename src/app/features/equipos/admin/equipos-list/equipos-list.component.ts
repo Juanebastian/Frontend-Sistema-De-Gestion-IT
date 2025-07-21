@@ -1,7 +1,10 @@
+// Importaciones necesarias de Angular y servicios personalizados
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
+// Servicios personalizados para manejo de datos
 import { ComputerService } from '../../../../core/services/computers.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AreaService } from '../../../../core/services/area.service';
@@ -9,62 +12,72 @@ import { MarcaService } from '../../../../core/services/marca.service';
 import { ModelService } from '../../../../core/services/models.service';
 import { OsService } from '../../../../core/services/os.service';
 import { UserService } from '../../../../core/services/user.service';
+
+// Modelo de datos de computador
 import { Computador } from '../../../../core/models/computer.model';
 
-
+// Decorador del componente
 @Component({
   selector: 'app-equipos-list',
-  standalone: true,
   imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './equipos-list.component.html',
   styleUrls: ['./equipos-list.component.css'],
 })
 export class EquiposListComponent implements OnInit {
+
+  // Variables para almacenar datos
   computadores: Computador[] = [];
   areas: any[] = []; 
   marcas: any[] = [];
   modelos: any[] = [];
   sistemasOperativos: any[] = [];
   usuarios: any[] = [];
+
+  // Variables de estado
   cargando = false;
   error = '';
   mostrarFormulario = false;
+
+  // Para edición o creación
   computadorEditando: Computador | null = null;
   nuevoComputador: Computador = this.obtenerComputadorVacio();
-  
 
+  // Variables para filtro y paginación
   computadoresFiltrados: Computador[] = [];
   filtroTexto: string = '';
   paginaActual: number = 1;
-  itemsPorPagina: number = 5;
+  itemsPorPagina: number = 10;
   computadoresFiltradosTotales: Computador[] = [];
 
+  // Inyección de dependencias en el constructor
   constructor(
     private computerService: ComputerService, 
-    private areaService: AreaService ,
+    private areaService: AreaService,
     private marcaService: MarcaService,
     private modeloService: ModelService,
     private soService: OsService,
     private userService: UserService,
-    private authService: AuthService) {}
-    
+    private authService: AuthService
+  ) {}
 
+  // Método de ciclo de vida al iniciar el componente
   ngOnInit(): void {
     this.cargarComputadores();
     this.cargarAreas(); 
-    this.cargarMarcas(); // Nueva línea
+    this.cargarMarcas(); 
     this.cargarModelos();
     this.cargarUsuarios();
     this.cargarSistemasOperativos();
   }
 
+  // Cargar lista de computadores desde la API
   cargarComputadores(): void {
     this.cargando = true;
     this.error = '';
     this.computerService.getAllComputers().subscribe({
       next: (data) => {
         this.computadores = data;
-        this.aplicarFiltroYPaginacion();  // Aplicar filtro y paginación cuando cargue
+        this.aplicarFiltroYPaginacion();  // Aplica filtro y paginación una vez cargados
         this.cargando = false;
       },
       error: (err) => {
@@ -75,13 +88,10 @@ export class EquiposListComponent implements OnInit {
     });
   }
 
-  // Método para filtrar y paginar la lista
-
-  
+  // Método para aplicar filtro y paginación
   aplicarFiltroYPaginacion(): void {
     const texto = this.filtroTexto.toLowerCase();
-  
-    // Filtramos
+
     const filtrados = this.computadores.filter(pc => {
       const datos = [
         this.getNombreMarca(pc.marca_id),
@@ -102,41 +112,35 @@ export class EquiposListComponent implements OnInit {
       .filter(campo => campo !== undefined && campo !== null)
       .map(campo => campo!.toString().toLowerCase())
       .join(' ');
-  
+
       return datos.includes(texto);
     });
-  
-    // Guardamos los totales filtrados
+
     this.computadoresFiltradosTotales = filtrados;
-  
-    // Aplicamos paginación
+
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
     const fin = inicio + this.itemsPorPagina;
     this.computadoresFiltrados = filtrados.slice(inicio, fin);
   }
-  
 
-
-
-  // Método para manejar cambio de página
+  // Cambio de página
   cambiarPagina(nuevaPagina: number) {
     this.paginaActual = nuevaPagina;
     this.aplicarFiltroYPaginacion();
   }
 
-  // Método para cuando cambia el filtro
+  // Cambio en el texto del filtro
   onFiltroChange() {
-    this.paginaActual = 1;  // resetear a la página 1 al cambiar filtro
+    this.paginaActual = 1;
     this.aplicarFiltroYPaginacion();
   }
 
+  // Total de páginas disponibles
   get totalPaginas(): number {
     return Math.ceil(this.computadoresFiltradosTotales.length / this.itemsPorPagina);
   }
-  
 
-  // Métodos para cargar datos de áreas, marcas, modelos, sistemas operativos y usuarios
-
+  // Métodos para cargar catálogos auxiliares
 
   cargarAreas(): void {
     this.areaService.getAllAreas().subscribe({
@@ -148,7 +152,7 @@ export class EquiposListComponent implements OnInit {
       }
     });
   }
-  
+
   cargarMarcas(): void {
     this.marcaService.getAllMarcas().subscribe({
       next: (data) => {
@@ -193,6 +197,7 @@ export class EquiposListComponent implements OnInit {
     });
   }
 
+  // Formulario: abrir, cerrar y cargar para edición
   abrirFormulario(): void {
     this.mostrarFormulario = true;
     this.computadorEditando = null;
@@ -211,6 +216,7 @@ export class EquiposListComponent implements OnInit {
     this.computadorEditando = null;
   }
 
+  // Guardar computador (nuevo o actualizado)
   guardarComputador(): void {
     const userId = this.authService.getUserId();
 
@@ -248,7 +254,7 @@ export class EquiposListComponent implements OnInit {
     }
   }
 
-
+  // Retorna objeto computador con valores vacíos por defecto
   obtenerComputadorVacio(): Computador {
     return {
       marca_id: 0,
@@ -267,6 +273,8 @@ export class EquiposListComponent implements OnInit {
       fecha_actualizacion: undefined,
     };
   }
+
+  // Métodos auxiliares para obtener nombres legibles desde IDs
 
   getNombreArea(areaId: number): string {
     const area = this.areas.find(a => a.id === areaId);
@@ -293,7 +301,8 @@ export class EquiposListComponent implements OnInit {
       1: 'Portátil',
       2: 'PC de escritorio',
       3: 'All-in-One',
-      4: 'Tableta'
+      4: 'Tableta',
+      5: 'Mini PC'
     };
     return tipos[tipo_id] || 'Desconocido';
   }
@@ -303,8 +312,4 @@ export class EquiposListComponent implements OnInit {
     return usuario ? usuario.nombre : 'Desconocido';
   }
 
-
-
-  
-  
 }

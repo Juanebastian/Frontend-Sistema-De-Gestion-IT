@@ -61,12 +61,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       exact: true,
       requiredRole: 1
     },
-    {
-      path: '/administrador/areas',
-      icon: 'M3.375 3.375h17.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125H3.375A1.125 1.125 0 012.25 20.25V4.5c0-.621.504-1.125 1.125-1.125zm4.5 3.375v13.5m4.5-13.5v13.5m4.5-13.5v13.5',
-      label: 'Áreas',
-      requiredRole: 1
-    },
+ 
     {
       path: '/administrador/users',
       icon: 'M2.25 21.75c0-3.018 2.448-5.467 5.467-5.467h4.566c3.019 0 5.468 2.449 5.468 5.467m-15.5-5.467a5.468 5.468 0 1110.936 0m-10.936 0v.75m10.936-.75v.75M12 10.5a4.125 4.125 0 100-8.25 4.125 4.125 0 000 8.25zm0 0v1.125m0 7.875v1.875',
@@ -117,6 +112,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       path: '/administrador/tickets',
       icon: 'M12 8.25a.75.75 0 01.75.75v2.25h2.25a.75.75 0 010 1.5h-2.25v2.25a.75.75 0 01-1.5 0v-2.25H8.25a.75.75 0 010-1.5h2.25V9a.75.75 0 01.75-.75z',
       label: 'Mesa De Ayuda',
+      requiredRole: 1
+    },
+    {
+      path: '/administrador/areas',
+      icon: 'M3.375 3.375h17.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125H3.375A1.125 1.125 0 012.25 20.25V4.5c0-.621.504-1.125 1.125-1.125zm4.5 3.375v13.5m4.5-13.5v13.5m4.5-13.5v13.5',
+      label: 'Áreas',
       requiredRole: 1
     },
 

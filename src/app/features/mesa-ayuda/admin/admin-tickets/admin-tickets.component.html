@@ -9,7 +9,7 @@
     </div>
     <div class="flex items-center gap-4">
       <p class="text-sm text-gray-600">
-        Abiertos: <span class="font-semibold">{{ ticketsAbiertosCount }}</span>
+        Tickets Abiertos: <span class="font-semibold">{{ ticketsAbiertosCount }}</span>
       </p>
       <p class="text-sm text-gray-600">
         Tickets En Proceso: {{ ticketsEnProcesoCount }}
@@ -31,7 +31,7 @@
   <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
 
   <!-- Center Section: Search -->
-    <div class="hidden lg:flex items-center flex-1 max-w-md mx-8 mb-4">
+    <div class="hidden lg:flex items-center flex-1 max-w-md mx-0 mb-4">
       <div class="relative w-full">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,9 +53,9 @@
       <thead class="bg-blue-100 text-blue-800 text-sm uppercase tracking-wider">
         <tr>
           <th class="px-6 py-3">ID</th>
+          <th class="px-6 py-3">Estado</th>
           <th class="px-6 py-3">Asunto</th>
           <th class="px-6 py-3">Descripción</th>
-          <th class="px-6 py-3">Estado</th>
           <th class="px-6 py-3">Prioridad</th>
           <th class="px-6 py-3">Usuario Creador</th>
           <th class="px-6 py-3">Técnico Asignado</th>
@@ -70,12 +70,24 @@
         <tr *ngFor="let ticket of ticketsFiltrados"
             class="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors duration-200">
           <td class="px-6 py-3">{{ ticket.id }}</td>
+          <td class="px-6 py-3">
+            <span 
+              [ngClass]="{
+                'bg-green-100 text-green-800': ticket.estado_id === 1,
+                'bg-yellow-100 text-yellow-800': ticket.estado_id === 2,
+                'bg-gray-200 text-gray-700': ticket.estado_id === 3
+              }"
+              class="px-3 py-1 rounded-full text-xs font-semibold"
+            >
+              {{ getNombreEstado(ticket.estado_id) }}
+            </span>
+          </td>
           <td class="px-6 py-3 truncate max-w-xs">{{ ticket.asunto }}</td>
           <td class="px-6 py-3 truncate max-w-xs">{{ ticket.descripcion }}</td>
-          <td class="px-6 py-3">{{ getNombreEstado(ticket.estado_id) }}</td>
+          
           <td class="px-6 py-3">{{ getNombrePrioridad(ticket.prioridad_id) }}</td>
-          <td class="px-6 py-3 min-w-[200px]">{{ getNombreUsuario(ticket.id_creador) }}</td>
-          <td class="px-6 py-3 min-w-[200px]">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
+          <td class="px-6 py-3 truncate max-w-xs">{{ getNombreUsuario(ticket.id_creador) }}</td>
+          <td class="px-6 py-3 truncate max-w-xs">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
           <td class="px-6 py-3">{{ getNombreArea(ticket.area_id) }}</td>
           <td class="px-6 py-3 truncate max-w-xs">{{ ticket.observaciones || '-' }}</td>
           <td class="px-6 py-3 min-w-[180px]">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
@@ -93,7 +105,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="flex justify-center items-center mt-4 gap-4">
+    <div class="flex justify-center items-center mt-4 gap-4  mb-6">
       <button
         (click)="cambiarPagina(paginaActual - 1)"
         [disabled]="paginaActual === 1"

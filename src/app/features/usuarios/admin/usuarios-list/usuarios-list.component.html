@@ -18,10 +18,6 @@
     </div>
   </h2>
 
-
-
-
-
   <!-- Estados -->
   <div *ngIf="cargando" class="flex items-center gap-2 text-blue-600 font-medium">
     <span class="animate-spin h-5 w-5 border-4 border-blue-300 border-t-transparent rounded-full"></span>
@@ -29,10 +25,8 @@
   </div>
   <div *ngIf="error" class="text-red-600 font-semibold mb-4">{{ error }}</div>
 
-
-
-<!-- Center Section: Search -->
-    <div class="hidden lg:flex items-center flex-1 max-w-md mx-8 mb-4">
+  <!-- Center Section: Search -->
+    <div class="hidden lg:flex items-center flex-1 max-w-md mx-0 mb-4">
       <div class="relative w-full">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,35 +49,34 @@
     <table class="w-full text-left border-collapse shadow-sm rounded-xl overflow-hidden">
       <thead class="bg-blue-100 text-blue-800 text-sm uppercase tracking-wider">
         <tr>
-         
           <th class="px-6 py-3">ID</th>
+          <th class="px-6 py-3">Estado</th>
+          <th class="px-6 py-3">Rol</th>
+          
           <th class="px-6 py-3">Nombre</th>
           <th class="px-6 py-3">Cédula</th>
           <th class="px-6 py-3">Correo</th>
-          <th class="px-6 py-3">Rol</th>
           <th class="px-6 py-3">Área</th>
-          <th class="px-6 py-3">Estado</th>
           <th class="px-6 py-3">Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let usuario of usuariosFiltrados; let i = index"
-        
-            class="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors duration-200">
-          
-          <td class="px-6 py-3">{{ usuario.id }}</td>
-          <td class="px-6 py-3">{{ usuario.nombre }}</td>
-          <td class="px-6 py-3">{{ usuario.cedula }}</td>
-          <td class="px-6 py-3">{{ usuario.correo }}</td>
-          <td class="px-6 py-3">{{ getNombreRol(usuario.rol_id) }}</td>
+          class="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors duration-200">
 
-          <td class="px-6 py-3">{{ getNombreArea(usuario.area_id) }}</td>
+          <td class="px-6 py-3">{{ usuario.id }}</td>
           <td class="px-6 py-3">
             <span [ngClass]="usuario.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
                   class="px-3 py-1 rounded-full text-xs font-semibold">
               {{ usuario.activo ? 'Activo' : 'Inactivo' }}
             </span>
           </td>
+          <td class="px-6 py-3">{{ getNombreRol(usuario.rol_id) }}</td>
+          
+          <td class="px-6 py-3 truncate max-w-xs">{{ usuario.nombre }}</td>
+          <td class="px-6 py-3">{{ usuario.cedula }}</td>
+          <td class="px-6 py-3">{{ usuario.correo }}</td>
+          <td class="px-6 py-3">{{ getNombreArea(usuario.area_id) }}</td>
           <td class="px-6 py-3">
             <button (click)="editarUsuario(usuario)"
                     class="text-sm bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg">
@@ -93,7 +86,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="flex justify-center items-center mt-4 gap-4">
+    <div class="flex justify-center items-center mt-4 gap-4 mb-6">
       <button
         (click)="cambiarPagina(paginaActual - 1)"
         [disabled]="paginaActual === 1"

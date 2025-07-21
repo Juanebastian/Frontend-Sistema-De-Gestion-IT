@@ -25,7 +25,7 @@ export class ComputerService {
     const headers = this.getAuthHeaders();
     return this.http.post(`${this.apiUrl}/computadores`, data, { headers }).pipe(
       catchError((err) => {
-        console.error('❌ Error al registrar computadores:', err);
+        console.error(' Error al registrar computadores:', err);
         return throwError(() => err);
       })
     );
@@ -36,7 +36,7 @@ export class ComputerService {
     const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/computadores/`, { headers }).pipe(
       catchError((err) => {
-        console.error('❌ Error al obtener computadores:', err);
+        console.error(' Error al obtener computadores:', err);
         return throwError(() => err);
       })
     );
@@ -47,7 +47,7 @@ export class ComputerService {
     const headers = this.getAuthHeaders();
     return this.http.put(`${this.apiUrl}/computadores/${userId}`, data, { headers }).pipe(
       catchError((err) => {
-        console.error('❌ Error al actualizar computadores:', err);
+        console.error(' Error al actualizar computadores:', err);
         return throwError(() => err);
       })
     );

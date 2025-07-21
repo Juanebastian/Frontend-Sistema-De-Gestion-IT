@@ -99,4 +99,19 @@ export class TicketService {
         })
       );
     }
+
+    /** Obtiene tickets creados por un colaborador (id_creador) */
+    getTicketsByColaboradorId(id_colaborador: number): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/colaborador/${id_colaborador}`, {
+        headers: this.getAuthHeaders(),
+      }).pipe(
+        catchError((err) => {
+          console.error(` Error al obtener tickets del colaborador con ID ${id_colaborador}:`, err);
+          return throwError(() => err);
+        })
+      );
+    }
+
+
+
 }

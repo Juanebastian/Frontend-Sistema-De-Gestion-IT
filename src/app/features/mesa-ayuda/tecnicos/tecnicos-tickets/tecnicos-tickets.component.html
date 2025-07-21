@@ -47,12 +47,12 @@
             <td class="px-4 py-2 truncate max-w-[200px]">{{ ticket.descripcion }}</td>
             <td class="px-4 py-2">{{ getNombreEstado(ticket.estado_id) }}</td>
             <td class="px-4 py-2">{{ getNombrePrioridad(ticket.prioridad_id) }}</td>
-            <td class="px-4 py-2">{{ getNombreUsuario(ticket.id_creador) }}</td>
-            <td class="px-4 py-2">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
+            <td class="px-4 py-2 min-w-[200px]">{{ getNombreUsuario(ticket.id_creador) }}</td>
+            <td class="px-4 py-2 min-w-[200px]">{{ getNombreUsuario(ticket.id_tecnico) }}</td>
             <td class="px-4 py-2">{{ getNombreArea(ticket.area_id) }}</td>
             <td class="px-4 py-2">{{ ticket.observaciones }}</td>
-            <td class="px-4 py-2">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
-            <td class="px-4 py-2">{{ ticket.fecha_cierre ? (ticket.fecha_cierre | date:'yyyy-MM-dd HH:mm') : '-' }}</td>
+            <td class="px-4 py-2 min-w-[200px]">{{ ticket.fecha_creacion | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td class="px-4 py-2 min-w-[200px]">{{ ticket.fecha_cierre ? (ticket.fecha_cierre | date:'yyyy-MM-dd HH:mm') : '-' }}</td>
             <td class="px-4 py-2">
               <button (click)="verTicket(ticket)"
                 class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition"
